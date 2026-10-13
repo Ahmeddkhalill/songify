@@ -32,5 +32,11 @@ public class SongConfiguration : IEntityTypeConfiguration<Song>
             .WithMany()
             .HasForeignKey(s => s.CreatedByUserId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Property(s => s.CoverImageUrl)
+            .HasMaxLength(500);
+
+        builder.Property(s => s.PreviewUrl)
+            .HasMaxLength(500);
     }
 }
