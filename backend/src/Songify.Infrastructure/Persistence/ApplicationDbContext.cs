@@ -1,6 +1,8 @@
-﻿namespace Songify.Infrastructure.Persistence;
+﻿using Songify.Application.Abstractions;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+namespace Songify.Infrastructure.Persistence;
+
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<Song> Songs => Set<Song>();

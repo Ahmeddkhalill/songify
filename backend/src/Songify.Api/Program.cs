@@ -1,12 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Songify.Infrastructure;
+using Songify.Api;
 using Songify.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -19,10 +17,21 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Songify API v1");
+        options.RoutePrefix = string.Empty;
+    });
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
