@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Songify.Api/Songify.Api.csproj" />
+    <Project Path="src/Songify.Application/Songify.Application.csproj" />
+    <Project Path="src/Songify.Domain/Songify.Domain.csproj" />
+    <Project Path="src/Songify.Infrastructure/Songify.Infrastructure.csproj" />
+  </Folder>
+</Solution>

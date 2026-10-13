@@ -1,0 +1,6 @@
+@Songify.Api_HostAddress = http://localhost:5230
+
+GET {{Songify.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
