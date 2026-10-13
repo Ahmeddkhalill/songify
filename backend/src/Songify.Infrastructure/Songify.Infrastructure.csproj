@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Songify.Application\Songify.Application.csproj" />
+	  <EmbeddedResource Include="Persistence\SeedData\songs.json" />
   </ItemGroup>
 
   <ItemGroup>
