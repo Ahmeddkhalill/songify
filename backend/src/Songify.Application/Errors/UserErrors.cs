@@ -13,4 +13,7 @@ public record UserErrors
 
     public static readonly Error Unauthorized =
         new("User.Unauthorized", "You must be signed in to perform this action", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error DuplicateUsername =
+        new("User.DuplicateUsername", "This username is already taken", StatusCodes.Status409Conflict);
 }
