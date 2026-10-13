@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Songify.Domain\Songify.Domain.csproj" />
+	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <PropertyGroup>
