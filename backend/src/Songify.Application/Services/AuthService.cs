@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Songify.Application.Abstractions;
 using Songify.Application.Contracts.Auth;
 using Songify.Application.Errors;
 

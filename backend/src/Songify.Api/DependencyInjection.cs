@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using Songify.Api.Handlers;
 using Songify.Application;
 using Songify.Infrastructure;
+using Songify.Infrastructure.Persistence;
 using System.Text;
 
 namespace Songify.Api;
@@ -19,6 +21,11 @@ public static class DependencyInjection
         services.AddInfrastructure(configuration);
 
         services.AddFluentValidationAutoValidation();
+
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
+
+        services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
         services
             .AddSwaggerServices()
