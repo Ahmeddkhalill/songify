@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #0b0c0e;
+  --color-ink-900: #111215;
+  --color-ink-850: #16171b;
+  --color-ink-800: #1c1e22;
+  --color-ink-750: #24262b;
+  --color-ink-700: #2e3137;
+  --color-ink-600: #444851;
+  --color-ink-500: #626772;
+  --color-ink-400: #8e939d;
+  --color-ink-300: #b6bac2;
+  --color-ink-200: #d6d8dd;
+  --color-ink-100: #edeef0;
+
+  --color-accent-300: #f7d68f;
+  --color-accent: #f2c35e;
+  --color-accent-500: #e3ac3c;
+  --color-accent-950: #221b0e;
+  --color-accent-fg: #1a1406;
+
+  --color-danger-300: #f7c3bd;
+  --color-danger-400: #f2766b;
+  --color-danger-500: #e05a4f;
+  --color-danger-600: #c8433a;
+  --color-danger-800: #5a2621;
+  --color-danger-950: #2a1513;
+
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --text-display: 40px;
+  --text-display--line-height: 44px;
+  --text-display--letter-spacing: -0.025em;
+  --text-display--font-weight: 600;
+
+  --text-title: 28px;
+  --text-title--line-height: 34px;
+  --text-title--letter-spacing: -0.02em;
+  --text-title--font-weight: 600;
+
+  --text-heading: 22px;
+  --text-heading--line-height: 28px;
+  --text-heading--letter-spacing: -0.01em;
+  --text-heading--font-weight: 600;
+
+  --text-subhead: 18px;
+  --text-subhead--line-height: 26px;
+  --text-subhead--letter-spacing: 0;
+  --text-subhead--font-weight: 600;
+
+  --text-body-lg: 15px;
+  --text-body-lg--line-height: 22px;
+  --text-body-lg--letter-spacing: 0;
+  --text-body-lg--font-weight: 500;
+
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-body--letter-spacing: 0;
+  --text-body--font-weight: 400;
+
+  --text-small: 13px;
+  --text-small--line-height: 18px;
+  --text-small--letter-spacing: 0;
+  --text-small--font-weight: 400;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-caption--letter-spacing: 0.06em;
+  --text-caption--font-weight: 500;
+
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-ink-100);
+    font-family: var(--font-sans);
+  }
+}
