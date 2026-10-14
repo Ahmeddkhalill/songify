@@ -541,6 +541,9 @@ export default function PlaylistDetailPage() {
   const coverImageUrls = songs
     .map((song) => song.coverImageUrl)
     .filter((url): url is string => url !== null)
+  const previewQueue = songs
+    .filter((song): song is PlaylistSong & { previewUrl: string } => song.previewUrl !== null)
+    .map((song) => ({ id: song.id, url: song.previewUrl }))
 
   return (
     <>
@@ -670,7 +673,7 @@ export default function PlaylistDetailPage() {
                   playing={playingId === song.id}
                   dragging={dragIndex === index}
                   over={overIndex === index && dragIndex !== null && dragIndex !== index}
-                  onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl)}
+                  onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl, previewQueue)}
                   onRemove={() => removeSong(song)}
                   onDragStart={() => setDragIndex(index)}
                   onDragOver={() => setOverIndex(index)}

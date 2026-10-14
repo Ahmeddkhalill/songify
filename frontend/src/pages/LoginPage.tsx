@@ -222,7 +222,7 @@ function shapeStyle(s: Shape): CSSProperties {
 }
 
 const inputBase =
-  'h-11 pl-3 rounded-md border bg-ink-900 text-ink-100 text-body-lg'
+  'w-full h-11 pl-3 rounded-md border bg-ink-900 text-ink-100 text-body-lg'
 
 export default function LoginPage() {
   const { token, isLoading, login, register } = useAuth()
