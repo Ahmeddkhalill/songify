@@ -7,6 +7,7 @@ import {
   deletePlaylist,
   getPlaylist,
   removeSongFromPlaylist,
+  reorderSong,
 } from '../api/playlists'
 import type { PlaylistDetail, PlaylistSong, Song } from '../api/types'
 import AddSongsPanel from '../components/AddSongsPanel'
@@ -21,7 +22,7 @@ import { formatDuration } from '../lib/duration'
 type Status = 'loading' | 'error' | 'notFound' | 'ready'
 
 const rowGrid =
-  'grid items-center gap-x-3 [grid-template-columns:28px_minmax(0,1fr)_56px_36px] min-[900px]:[grid-template-columns:28px_minmax(0,2.2fr)_minmax(0,1.4fr)_56px_36px]'
+  'grid items-center gap-x-3 [grid-template-columns:28px_minmax(0,1fr)_56px_36px_28px] min-[900px]:[grid-template-columns:28px_minmax(0,2.2fr)_minmax(0,1.4fr)_56px_36px_28px]'
 const skeletonWidths = ['46%', '34%', '52%', '40%', '58%', '30%', '44%', '50%']
 
 function isApiError(error: unknown): error is ApiError {
@@ -121,23 +122,65 @@ function PauseIcon() {
   )
 }
 
+function DragHandleIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="9" cy="6" r="1.4" />
+      <circle cx="15" cy="6" r="1.4" />
+      <circle cx="9" cy="12" r="1.4" />
+      <circle cx="15" cy="12" r="1.4" />
+      <circle cx="9" cy="18" r="1.4" />
+      <circle cx="15" cy="18" r="1.4" />
+    </svg>
+  )
+}
+
 function SongRow({
   song,
   position,
   playing,
+  dragging,
+  over,
   onTogglePlay,
   onRemove,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: {
   song: PlaylistSong
   position: number
   playing: boolean
+  dragging: boolean
+  over: boolean
   onTogglePlay: () => void
   onRemove: () => void
+  onDragStart: () => void
+  onDragOver: () => void
+  onDrop: () => void
+  onDragEnd: () => void
 }) {
   const hasPreview = song.previewUrl !== null
 
   return (
-    <li className={`${rowGrid} group relative min-h-[60px] px-3 rounded-md transition-colors hover:bg-ink-850`}>
+    <li
+      onDragOver={(event) => {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+        onDragOver()
+      }}
+      onDrop={(event) => {
+        event.preventDefault()
+        onDrop()
+      }}
+      className={`${rowGrid} group relative min-h-[60px] px-3 rounded-md transition-colors ${
+        dragging
+          ? 'opacity-60 bg-ink-800 shadow-[0_12px_32px_rgba(0,0,0,0.5)]'
+          : over
+            ? 'bg-ink-850 ring-2 ring-inset ring-accent'
+            : 'hover:bg-ink-850'
+      }`}
+    >
       <span className="relative justify-self-end flex items-center h-9">
         {hasPreview ? (
           <>
@@ -203,6 +246,22 @@ function SongRow({
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
+      <span className="justify-self-center">
+        <button
+          type="button"
+          draggable
+          onDragStart={(event) => {
+            event.dataTransfer.effectAllowed = 'move'
+            event.dataTransfer.setData('text/plain', String(song.id))
+            onDragStart()
+          }}
+          onDragEnd={onDragEnd}
+          aria-label={`Drag to reorder ${song.title}`}
+          className="w-7 h-9 grid place-items-center rounded-md text-ink-500 cursor-grab opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:text-ink-200 hover:bg-ink-750"
+        >
+          <DragHandleIcon />
+        </button>
+      </span>
     </li>
   )
 }
@@ -248,6 +307,7 @@ function LoadingState() {
           <span className="text-right">#</span>
           <span>Title</span>
           <span className="hidden min-[900px]:block">Album</span>
+          <span />
           <span />
           <span />
         </div>
@@ -309,6 +369,9 @@ export default function PlaylistDetailPage() {
   const [deletePending, setDeletePending] = useState(false)
   const [deleteFailed, setDeleteFailed] = useState(false)
   const [removeError, setRemoveError] = useState<PlaylistSong | null>(null)
+  const [reorderError, setReorderError] = useState(false)
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [overIndex, setOverIndex] = useState<number | null>(null)
 
   const load = useCallback(async () => {
     if (!Number.isInteger(id)) {
@@ -391,6 +454,51 @@ export default function PlaylistDetailPage() {
     },
     [id],
   )
+
+  const reorder = useCallback(
+    async (from: number, to: number) => {
+      if (from === to) {
+        return
+      }
+
+      const previous = playlist?.songs
+      if (!previous) {
+        return
+      }
+
+      const next = previous.slice()
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+
+      setReorderError(false)
+      setPlaylist((current) =>
+        current
+          ? { ...current, songs: next.map((song, index) => ({ ...song, position: index })) }
+          : current,
+      )
+
+      try {
+        await reorderSong(id, moved.id, { newPosition: to })
+      } catch {
+        setPlaylist((current) => (current ? { ...current, songs: previous } : current))
+        setReorderError(true)
+      }
+    },
+    [id, playlist],
+  )
+
+  function handleDrop(index: number) {
+    if (dragIndex !== null) {
+      reorder(dragIndex, index)
+    }
+    setDragIndex(null)
+    setOverIndex(null)
+  }
+
+  function endDrag() {
+    setDragIndex(null)
+    setOverIndex(null)
+  }
 
   async function confirmDelete() {
     setDeletePending(true)
@@ -492,6 +600,15 @@ export default function PlaylistDetailPage() {
           />
         )}
 
+        {reorderError && (
+          <ErrorBanner
+            title="We couldn’t save the new order."
+            description="The songs are back in their original order. Try again."
+            retryLabel="Dismiss"
+            onRetry={() => setReorderError(false)}
+          />
+        )}
+
         {isEmpty ? (
           <section className="flex flex-col items-center gap-4 px-6 py-[72px] border border-dashed border-ink-700 rounded-xl text-center">
             <div className="flex flex-col gap-1.5 max-w-[380px]">
@@ -542,6 +659,7 @@ export default function PlaylistDetailPage() {
                 </svg>
               </span>
               <span />
+              <span />
             </div>
             <ol className="list-none m-0 p-0 flex flex-col gap-0.5 mt-2">
               {songs.map((song, index) => (
@@ -550,8 +668,14 @@ export default function PlaylistDetailPage() {
                   song={song}
                   position={index + 1}
                   playing={playingId === song.id}
+                  dragging={dragIndex === index}
+                  over={overIndex === index && dragIndex !== null && dragIndex !== index}
                   onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl)}
                   onRemove={() => removeSong(song)}
+                  onDragStart={() => setDragIndex(index)}
+                  onDragOver={() => setOverIndex(index)}
+                  onDrop={() => handleDrop(index)}
+                  onDragEnd={endDrag}
                 />
               ))}
             </ol>
