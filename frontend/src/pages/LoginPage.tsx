@@ -122,6 +122,45 @@ function CheckIcon({ size }: { size: number }) {
   )
 }
 
+function EyeIcon({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
+function EyeOffIcon({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9.9 5.2A9.5 9.5 0 0 1 12 5c7 0 10.5 7 10.5 7a18 18 0 0 1-2.4 3.3M6.3 6.3A17.7 17.7 0 0 0 1.5 12S5 19 12 19a9.4 9.4 0 0 0 5.7-1.8" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="M3 3l18 18" />
+    </svg>
+  )
+}
+
 interface Cover {
   bg: string
   a: Shape
@@ -184,6 +223,7 @@ export default function LoginPage() {
   const [serverErrors, setServerErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   if (isLoading) {
     return null
@@ -201,6 +241,7 @@ export default function LoginPage() {
     setTouched({ email: false, username: false, password: false })
     setServerErrors({})
     setFormError(null)
+    setShowPassword(false)
   }
 
   function markTouched(field: Field) {
@@ -470,7 +511,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete={isReg ? 'new-password' : 'current-password'}
                   value={password}
                   onChange={(event) => {
@@ -482,13 +523,24 @@ export default function LoginPage() {
                   aria-describedby={
                     passwordErr ? 'password-error' : isReg ? 'password-hint' : undefined
                   }
-                  className={`${inputBase} ${passwordStatus === 'valid' ? 'pr-10' : 'pr-3'} ${borderByStatus[passwordStatus]}`}
+                  className={`${inputBase} ${passwordStatus === 'valid' ? 'pr-16' : 'pr-10'} ${borderByStatus[passwordStatus]}`}
                 />
-                {passwordStatus === 'valid' && (
-                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-success-400">
-                    <CheckIcon size={16} />
-                  </span>
-                )}
+                <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center gap-1.5">
+                  {passwordStatus === 'valid' && (
+                    <span className="flex items-center text-success-400">
+                      <CheckIcon size={16} />
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                    onClick={() => setShowPassword((current) => !current)}
+                    className="pointer-events-auto flex h-7 w-7 items-center justify-center rounded-sm text-ink-400 hover:text-ink-100"
+                  >
+                    {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                  </button>
+                </div>
               </div>
               {passwordErr ? (
                 <p
