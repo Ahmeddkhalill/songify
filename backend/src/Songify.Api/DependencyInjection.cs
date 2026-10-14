@@ -29,7 +29,7 @@ public static class DependencyInjection
         services
             .AddSwaggerServices()
             .AddJwtAuthentication(configuration)
-            .AddCorsPolicies();
+            .AddCorsPolicies(configuration);
 
         return services;
     }
@@ -80,6 +80,10 @@ public static class DependencyInjection
     {
         var jwtSection = configuration.GetSection("Jwt");
 
+        var signingKey = jwtSection["Key"]
+            ?? throw new InvalidOperationException(
+                "JWT signing key 'Jwt:Key' is not configured. Set it via the Jwt__Key environment variable.");
+
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -93,7 +97,7 @@ public static class DependencyInjection
                     ValidIssuer = jwtSection["Issuer"],
                     ValidAudience = jwtSection["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSection["Key"]!)),
+                        Encoding.UTF8.GetBytes(signingKey)),
                     ClockSkew = TimeSpan.Zero
                 };
             });
@@ -103,12 +107,15 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddCorsPolicies(this IServiceCollection services)
+    private static IServiceCollection AddCorsPolicies(this IServiceCollection services, IConfiguration configuration)
     {
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? ["http://localhost:5173"];
+
         services.AddCors(options =>
         {
             options.AddPolicy("Frontend", policy =>
-                policy.WithOrigins("http://localhost:5173")
+                policy.WithOrigins(allowedOrigins)
                       .AllowAnyHeader()
                       .AllowAnyMethod());
         });
