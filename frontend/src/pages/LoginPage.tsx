@@ -5,6 +5,10 @@ import type { ApiError } from '../api/client'
 
 type Mode = 'signin' | 'register'
 
+type Field = 'email' | 'username' | 'password'
+
+type FieldStatus = 'neutral' | 'invalid' | 'valid'
+
 interface FieldErrors {
   email?: string
   username?: string
@@ -13,6 +17,7 @@ interface FieldErrors {
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const usernamePattern = /^[a-zA-Z0-9_]+$/
+const specialPattern = /[!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?]/
 
 function isApiError(error: unknown): error is ApiError {
   return (
@@ -24,34 +29,61 @@ function isApiError(error: unknown): error is ApiError {
   )
 }
 
-function validate(mode: Mode, email: string, username: string, password: string): FieldErrors {
-  const errors: FieldErrors = {}
+function emailError(email: string): string | undefined {
+  return emailPattern.test(email.trim()) ? undefined : 'Enter a valid email address.'
+}
 
-  if (!emailPattern.test(email.trim())) {
-    errors.email = 'Enter a valid email address.'
+function usernameError(username: string): string | undefined {
+  if (username.length < 3 || username.length > 50 || !usernamePattern.test(username)) {
+    return 'Use 3–50 letters, numbers or underscores.'
   }
+  return undefined
+}
 
+function passwordError(mode: Mode, password: string): string | undefined {
   if (mode === 'register') {
-    if (username.length < 3 || username.length > 50 || !usernamePattern.test(username)) {
-      errors.username = 'Use 3–50 letters, numbers or underscores.'
-    }
-
     const strong =
       password.length >= 8 &&
       /[a-z]/.test(password) &&
       /[A-Z]/.test(password) &&
       /[0-9]/.test(password) &&
-      /[!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?]/.test(password)
+      specialPattern.test(password)
 
-    if (!strong) {
-      errors.password =
-        'Use at least 8 characters with an uppercase, a lowercase, a number and a special character.'
+    return strong
+      ? undefined
+      : 'Use at least 8 characters with an uppercase, a lowercase, a number and a special character.'
+  }
+
+  return password.length === 0 ? 'Enter your password.' : undefined
+}
+
+function validate(mode: Mode, email: string, username: string, password: string): FieldErrors {
+  const errors: FieldErrors = {}
+
+  const email_ = emailError(email)
+  if (email_) {
+    errors.email = email_
+  }
+
+  if (mode === 'register') {
+    const username_ = usernameError(username)
+    if (username_) {
+      errors.username = username_
     }
-  } else if (password.length === 0) {
-    errors.password = 'Enter your password.'
+  }
+
+  const password_ = passwordError(mode, password)
+  if (password_) {
+    errors.password = password_
   }
 
   return errors
+}
+
+const borderByStatus: Record<FieldStatus, string> = {
+  neutral: 'border-ink-700 focus:border-ink-400',
+  invalid: 'border-danger-500',
+  valid: 'border-success-500',
 }
 
 function AlertIcon({ size, color }: { size: number; color: string }) {
@@ -68,6 +100,24 @@ function AlertIcon({ size, color }: { size: number; color: string }) {
     >
       <circle cx="12" cy="12" r="9" />
       <path d="M12 8v5M12 16.5v.01" />
+    </svg>
+  )
+}
+
+function CheckIcon({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 6 9 17l-5-5" />
     </svg>
   )
 }
@@ -116,7 +166,7 @@ function shapeStyle(s: Shape): CSSProperties {
 }
 
 const inputBase =
-  'h-11 px-3 rounded-md border bg-ink-900 text-ink-100 text-body-lg focus:border-ink-400'
+  'h-11 pl-3 rounded-md border bg-ink-900 text-ink-100 text-body-lg'
 
 export default function LoginPage() {
   const { token, isLoading, login, register } = useAuth()
@@ -126,7 +176,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [touched, setTouched] = useState<Record<Field, boolean>>({
+    email: false,
+    username: false,
+    password: false,
+  })
+  const [serverErrors, setServerErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
@@ -139,15 +194,21 @@ export default function LoginPage() {
   }
 
   const isReg = mode === 'register'
+  const clientErrors = validate(mode, email, username, password)
 
   function switchMode(next: Mode) {
     setMode(next)
-    setFieldErrors({})
+    setTouched({ email: false, username: false, password: false })
+    setServerErrors({})
     setFormError(null)
   }
 
-  function clearField(field: keyof FieldErrors) {
-    setFieldErrors((current) => {
+  function markTouched(field: Field) {
+    setTouched((current) => (current[field] ? current : { ...current, [field]: true }))
+  }
+
+  function clearServerError(field: Field) {
+    setServerErrors((current) => {
       if (!(field in current)) {
         return current
       }
@@ -158,6 +219,23 @@ export default function LoginPage() {
     })
   }
 
+  function fieldError(field: Field): string | undefined {
+    if (serverErrors[field]) {
+      return serverErrors[field]
+    }
+    return touched[field] ? clientErrors[field] : undefined
+  }
+
+  function fieldStatus(field: Field): FieldStatus {
+    if (fieldError(field)) {
+      return 'invalid'
+    }
+    if (touched[field] && !clientErrors[field]) {
+      return 'valid'
+    }
+    return 'neutral'
+  }
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
 
@@ -165,11 +243,11 @@ export default function LoginPage() {
       return
     }
 
-    const errors = validate(mode, email, username, password)
-    setFieldErrors(errors)
+    setServerErrors({})
     setFormError(null)
+    setTouched({ email: true, username: true, password: true })
 
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(clientErrors).length > 0) {
       return
     }
 
@@ -195,7 +273,7 @@ export default function LoginPage() {
         }
 
         if (Object.keys(mapped).length > 0) {
-          setFieldErrors(mapped)
+          setServerErrors(mapped)
         } else {
           setFormError(isApiError(error) ? error.message : 'Something went wrong.')
         }
@@ -209,6 +287,13 @@ export default function LoginPage() {
 
   const submitLabel = isReg ? 'Create account' : 'Sign in'
   const pendingLabel = isReg ? 'Creating account…' : 'Signing in…'
+
+  const emailStatus = fieldStatus('email')
+  const usernameStatus = fieldStatus('username')
+  const passwordStatus = fieldStatus('password')
+  const emailErr = fieldError('email')
+  const usernameErr = fieldError('username')
+  const passwordErr = fieldError('password')
 
   return (
     <div className="min-h-screen flex flex-wrap bg-ink-950 text-ink-100 font-sans text-body">
@@ -308,26 +393,34 @@ export default function LoginPage() {
               <label htmlFor="email" className="text-small font-medium text-ink-300">
                 Email
               </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value)
-                  clearField('email')
-                }}
-                aria-invalid={fieldErrors.email ? true : undefined}
-                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-                className={`${inputBase} ${fieldErrors.email ? 'border-danger-500' : 'border-ink-700'}`}
-              />
-              {fieldErrors.email && (
+              <div className="relative">
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value)
+                    clearServerError('email')
+                  }}
+                  onBlur={() => markTouched('email')}
+                  aria-invalid={emailErr ? true : undefined}
+                  aria-describedby={emailErr ? 'email-error' : undefined}
+                  className={`${inputBase} ${emailStatus === 'valid' ? 'pr-10' : 'pr-3'} ${borderByStatus[emailStatus]}`}
+                />
+                {emailStatus === 'valid' && (
+                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-success-400">
+                    <CheckIcon size={16} />
+                  </span>
+                )}
+              </div>
+              {emailErr && (
                 <p
                   id="email-error"
                   className="m-0 flex gap-1.5 items-center text-caption font-normal text-danger-400"
                 >
                   <AlertIcon size={14} color="currentColor" />
-                  {fieldErrors.email}
+                  {emailErr}
                 </p>
               )}
             </div>
@@ -337,28 +430,34 @@ export default function LoginPage() {
                 <label htmlFor="username" className="text-small font-medium text-ink-300">
                   Username
                 </label>
-                <input
-                  id="username"
-                  type="text"
-                  autoComplete="username"
-                  value={username}
-                  onChange={(event) => {
-                    setUsername(event.target.value)
-                    clearField('username')
-                  }}
-                  aria-invalid={fieldErrors.username ? true : undefined}
-                  aria-describedby={fieldErrors.username ? 'username-error' : undefined}
-                  className={`${inputBase} ${
-                    fieldErrors.username ? 'border-danger-500' : 'border-ink-700'
-                  }`}
-                />
-                {fieldErrors.username && (
+                <div className="relative">
+                  <input
+                    id="username"
+                    type="text"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(event) => {
+                      setUsername(event.target.value)
+                      clearServerError('username')
+                    }}
+                    onBlur={() => markTouched('username')}
+                    aria-invalid={usernameErr ? true : undefined}
+                    aria-describedby={usernameErr ? 'username-error' : undefined}
+                    className={`${inputBase} ${usernameStatus === 'valid' ? 'pr-10' : 'pr-3'} ${borderByStatus[usernameStatus]}`}
+                  />
+                  {usernameStatus === 'valid' && (
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-success-400">
+                      <CheckIcon size={16} />
+                    </span>
+                  )}
+                </div>
+                {usernameErr && (
                   <p
                     id="username-error"
                     className="m-0 flex gap-1.5 items-center text-caption font-normal text-danger-400"
                   >
                     <AlertIcon size={14} color="currentColor" />
-                    {fieldErrors.username}
+                    {usernameErr}
                   </p>
                 )}
               </div>
@@ -368,34 +467,36 @@ export default function LoginPage() {
               <label htmlFor="password" className="text-small font-medium text-ink-300">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete={isReg ? 'new-password' : 'current-password'}
-                value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value)
-                  clearField('password')
-                }}
-                aria-invalid={fieldErrors.password ? true : undefined}
-                aria-describedby={
-                  fieldErrors.password
-                    ? 'password-error'
-                    : isReg
-                      ? 'password-hint'
-                      : undefined
-                }
-                className={`${inputBase} ${
-                  fieldErrors.password ? 'border-danger-500' : 'border-ink-700'
-                }`}
-              />
-              {fieldErrors.password ? (
+              <div className="relative">
+                <input
+                  id="password"
+                  type="password"
+                  autoComplete={isReg ? 'new-password' : 'current-password'}
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value)
+                    clearServerError('password')
+                  }}
+                  onBlur={() => markTouched('password')}
+                  aria-invalid={passwordErr ? true : undefined}
+                  aria-describedby={
+                    passwordErr ? 'password-error' : isReg ? 'password-hint' : undefined
+                  }
+                  className={`${inputBase} ${passwordStatus === 'valid' ? 'pr-10' : 'pr-3'} ${borderByStatus[passwordStatus]}`}
+                />
+                {passwordStatus === 'valid' && (
+                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-success-400">
+                    <CheckIcon size={16} />
+                  </span>
+                )}
+              </div>
+              {passwordErr ? (
                 <p
                   id="password-error"
                   className="m-0 flex gap-1.5 items-center text-caption font-normal text-danger-400"
                 >
                   <AlertIcon size={14} color="currentColor" />
-                  {fieldErrors.password}
+                  {passwordErr}
                 </p>
               ) : (
                 isReg && (
