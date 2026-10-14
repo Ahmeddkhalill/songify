@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { searchSongs } from '../api/songs'
+import { useAudioPlayer } from '../audio/AudioPlayerContext'
 import type { Song } from '../api/types'
 import ErrorBanner from './ErrorBanner'
 import Skeleton from './Skeleton'
@@ -70,15 +71,35 @@ function CloseIcon() {
   )
 }
 
+function PlayIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  )
+}
+
+function PauseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" />
+    </svg>
+  )
+}
+
 function ResultRow({
   song,
   added,
   justAdded,
+  playing,
+  onTogglePlay,
   onAdd,
 }: {
   song: Song
   added: boolean
   justAdded: boolean
+  playing: boolean
+  onTogglePlay: () => void
   onAdd: () => void
 }) {
   return (
@@ -97,13 +118,29 @@ function ResultRow({
         )}
       </div>
       <div className="flex-1 min-w-0 flex flex-col">
-        <span className={`font-medium truncate ${added ? 'text-ink-400' : 'text-ink-100'}`}>
+        <span
+          className={`font-medium truncate ${
+            playing ? 'text-accent' : added ? 'text-ink-400' : 'text-ink-100'
+          }`}
+        >
           {song.title}
         </span>
         <span className="text-small text-ink-400 truncate">
           {song.artist} · <span className="font-mono tabular-nums">{formatTrackDuration(song.durationInSeconds)}</span>
         </span>
       </div>
+      {song.previewUrl && (
+        <button
+          type="button"
+          onClick={onTogglePlay}
+          aria-label={playing ? `Pause ${song.title}` : `Play ${song.title}`}
+          className={`flex-none w-9 h-9 grid place-items-center rounded-md ${
+            playing ? 'text-accent' : 'text-ink-400 hover:bg-ink-800 hover:text-ink-100'
+          }`}
+        >
+          {playing ? <PauseIcon /> : <PlayIcon />}
+        </button>
+      )}
       {added ? (
         <span className="flex-none flex items-center gap-1.5 h-9 pl-2.5 pr-3 text-ink-400 text-small font-medium">
           <svg
@@ -162,6 +199,7 @@ export default function AddSongsPanel({
   const [status, setStatus] = useState<Status>('loading')
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set())
   const [addError, setAddError] = useState<Song | null>(null)
+  const { playingId, toggle } = useAudioPlayer()
 
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -426,6 +464,8 @@ export default function AddSongsPanel({
                     song={song}
                     added={addedSet.has(song.id)}
                     justAdded={justAdded.has(song.id)}
+                    playing={playingId === song.id}
+                    onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl)}
                     onAdd={() => handleAdd(song)}
                   />
                 ))}
