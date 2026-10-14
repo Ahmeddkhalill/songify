@@ -181,7 +181,7 @@ function SongRow({
             : 'hover:bg-ink-850'
       }`}
     >
-      <span className="relative justify-self-end flex items-center h-9">
+      <span className="relative flex items-center justify-end h-9">
         {hasPreview ? (
           <>
             <button
