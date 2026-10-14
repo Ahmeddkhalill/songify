@@ -15,6 +15,8 @@ using (var scope = app.Services.CreateScope())
     await ApplicationDbSeeder.SeedAsync(context);
 }
 
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
