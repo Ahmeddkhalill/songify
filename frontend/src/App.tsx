@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AudioPlayerProvider } from './audio/AudioPlayerContext'
 import { AuthProvider } from './auth/AuthContext'
 import ProtectedRoute from './auth/ProtectedRoute'
 import AppLayout from './components/AppLayout'
@@ -9,18 +10,20 @@ import PlaylistsPage from './pages/PlaylistsPage'
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route path="/playlists" element={<PlaylistsPage />} />
-              <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
+      <AudioPlayerProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path="/playlists" element={<PlaylistsPage />} />
+                <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
+              </Route>
             </Route>
-          </Route>
-          <Route path="/" element={<Navigate to="/playlists" replace />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="/" element={<Navigate to="/playlists" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AudioPlayerProvider>
     </AuthProvider>
   )
 }
