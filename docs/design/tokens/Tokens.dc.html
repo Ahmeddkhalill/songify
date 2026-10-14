@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Songify · Design tokens</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0C0E}
+a{color:#EDEEF0}a:hover{color:#F2C35E}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1460px; box-sizing: border-box; padding: 56px; background: #0B0C0E; color: #EDEEF0; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 20px; display: flex; flex-direction: column; gap: 48px">
+
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em">Design tokens</h1>
+    <p style="margin: 0; color: #8E939D; font-size: 13px; line-height: 18px">Geist + Geist Mono · cool-neutral ink scale · one amber accent for the primary action, the playing track and focus.</p>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 20px">
+    <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Colour · ink</h2>
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{ink}}" as="c" hint-placeholder-count="12">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <div style="height: 72px; border-radius: 6px; background: {{c.hex}}; border: 1px solid #24262B"></div>
+          <div style="display: flex; flex-direction: column">
+            <span style="font-size: 13px; line-height: 18px; font-weight: 500">{{c.name}}</span>
+            <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; color: #8E939D">{{c.hex}}</span>
+            <span style="font-size: 11px; line-height: 16px; color: #8E939D">{{c.role}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; margin-top: 8px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Colour · accent</h2>
+        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px">
+          <sc-for list="{{accent}}" as="c" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <div style="height: 56px; border-radius: 6px; background: {{c.hex}}; border: 1px solid #24262B"></div>
+              <div style="display: flex; flex-direction: column">
+                <span style="font-size: 13px; line-height: 18px; font-weight: 500">{{c.name}}</span>
+                <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; color: #8E939D">{{c.hex}}</span>
+                <span style="font-size: 11px; line-height: 16px; color: #8E939D">{{c.role}}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Colour · danger</h2>
+        <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+          <sc-for list="{{danger}}" as="c" hint-placeholder-count="6">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <div style="height: 56px; border-radius: 6px; background: {{c.hex}}; border: 1px solid #24262B"></div>
+              <div style="display: flex; flex-direction: column">
+                <span style="font-size: 13px; line-height: 18px; font-weight: 500">{{c.name}}</span>
+                <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; color: #8E939D">{{c.hex}}</span>
+                <span style="font-size: 11px; line-height: 16px; color: #8E939D">{{c.role}}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Type scale</h2>
+    <div style="display: flex; flex-direction: column; border-top: 1px solid #24262B">
+      <sc-for list="{{type}}" as="t" hint-placeholder-count="9">
+        <div style="display: grid; grid-template-columns: 140px 220px minmax(0, 1fr); column-gap: 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #24262B">
+          <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: #EDEEF0">{{t.name}}</span>
+          <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #8E939D">{{t.spec}}</span>
+          <span style="font-family: {{t.family}}; font-size: {{t.size}}; line-height: {{t.lh}}; font-weight: {{t.weight}}; letter-spacing: {{t.ls}}; text-transform: {{t.tt}}; color: {{t.color}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{t.sample}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px">
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Spacing · 4 px base</h2>
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <sc-for list="{{space}}" as="s" hint-placeholder-count="10">
+          <div style="display: grid; grid-template-columns: 56px 100px minmax(0, 1fr); column-gap: 16px; align-items: center">
+            <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px">{{s.key}}</span>
+            <div style="height: 12px; width: {{s.px}}; background: #444851; border-radius: 2px"></div>
+            <span style="font-size: 12px; line-height: 16px; color: #8E939D">{{s.px}} · {{s.use}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Radii</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px">
+        <sc-for list="{{radii}}" as="r" hint-placeholder-count="6">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="height: 72px; border: 1px solid #444851; background: #16171B; border-radius: {{r.px}}"></div>
+            <span style="font-size: 13px; line-height: 18px"><span style="font-family: 'Geist Mono', ui-monospace, monospace">{{r.key}}</span> <span style="color: #8E939D">{{r.px}}</span></span>
+            <span style="font-size: 11px; line-height: 16px; color: #8E939D">{{r.use}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 16px">
+        <h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Elevation</h2>
+        <p style="margin: 0; color: #8E939D; font-size: 13px; line-height: 18px">Flat by default: surfaces separate by ink step and 1 px borders. Shadow only for things floating over content — toasts, dialogs, a dragged row.</p>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1460}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const sans = "'Geist', ui-sans-serif, system-ui, sans-serif";
+    const mono = "'Geist Mono', ui-monospace, monospace";
+    const T = (name, spec, size, lh, weight, ls, sample, opts) => Object.assign({ name, spec, size, lh, weight, ls, sample, family: sans, tt: 'none', color: '#EDEEF0' }, opts || {});
+    return {
+      ink: [
+        { name: '950', hex: '#0B0C0E', role: 'App background' },
+        { name: '900', hex: '#111215', role: 'Surface, panels' },
+        { name: '850', hex: '#16171B', role: 'Row hover, raised' },
+        { name: '800', hex: '#1C1E22', role: 'Hover, skeleton, toast' },
+        { name: '750', hex: '#24262B', role: 'Dividers' },
+        { name: '700', hex: '#2E3137', role: 'Control borders' },
+        { name: '600', hex: '#444851', role: 'Strong border' },
+        { name: '500', hex: '#626772', role: 'Placeholder, disabled' },
+        { name: '400', hex: '#8E939D', role: 'Secondary text' },
+        { name: '300', hex: '#B6BAC2', role: 'Labels, descriptions' },
+        { name: '200', hex: '#D6D8DD', role: 'Icons, button text' },
+        { name: '100', hex: '#EDEEF0', role: 'Primary text' }
+      ],
+      accent: [
+        { name: '300', hex: '#F7D68F', role: 'Text on tint' },
+        { name: 'DEFAULT', hex: '#F2C35E', role: 'Primary, playing, focus' },
+        { name: '500', hex: '#E3AC3C', role: 'Hover / pressed' },
+        { name: '950', hex: '#221B0E', role: 'Just-added tint' },
+        { name: 'fg', hex: '#1A1406', role: 'Text on accent' }
+      ],
+      danger: [
+        { name: '300', hex: '#F7C3BD', role: 'Banner text' },
+        { name: '400', hex: '#F2766B', role: 'Error text, icon' },
+        { name: '500', hex: '#E05A4F', role: 'Invalid border' },
+        { name: '600', hex: '#C8433A', role: 'Destructive button' },
+        { name: '800', hex: '#5A2621', role: 'Banner border' },
+        { name: '950', hex: '#2A1513', role: 'Banner bg' }
+      ],
+      type: [
+        T('display', '40 / 44 · 600 · −2.5%', '40px', '44px', 600, '-0.025em', 'Road Trip Classics'),
+        T('title', '28 / 34 · 600 · −2%', '28px', '34px', 600, '-0.02em', 'Create your account'),
+        T('heading', '22 / 28 · 600 · −1%', '22px', '28px', 600, '-0.01em', 'Your playlists'),
+        T('subhead', '18 / 26 · 600', '18px', '26px', 600, '0', 'Delete “Road Trip Classics”?'),
+        T('body-lg', '15 / 22 · 400–500', '15px', '22px', 500, '0', 'Long drives, loud choruses. Everyone knows the words.'),
+        T('body', '14 / 20 · 400–500', '14px', '20px', 400, '0', 'Hotel California — the default row and UI text size'),
+        T('small', '13 / 18 · 400', '13px', '18px', 400, '0', '8 songs · 42 min · Updated today', { color: '#8E939D' }),
+        T('caption', '12 / 16 · 500 · +6% caps', '12px', '16px', 500, '0.06em', 'Playlist · Title · Album', { tt: 'uppercase', color: '#8E939D' }),
+        T('mono', '13 / 18 · Geist Mono · tabular', '13px', '18px', 400, '0', '1   5:55   9:22   20', { family: mono, color: '#8E939D' })
+      ],
+      space: [
+        { key: '1', px: '4px', use: 'Icon to label' },
+        { key: '2', px: '8px', use: 'Button groups, tight stacks' },
+        { key: '3', px: '12px', use: 'Row cell gap, thumb to text' },
+        { key: '4', px: '16px', use: 'Card internals' },
+        { key: '6', px: '24px', use: 'Grid gap, dialog padding' },
+        { key: '8', px: '32px', use: 'Page gutter, header gap' },
+        { key: '10', px: '40px', use: 'Header to list' },
+        { key: '12', px: '48px', use: 'Page top, section gap' },
+        { key: '16', px: '64px', use: 'App header height' },
+        { key: '24', px: '96px', use: 'Empty-state padding' }
+      ],
+      radii: [
+        { key: 'xs', px: '3px', use: 'Skeleton lines' },
+        { key: 'sm', px: '4px', use: 'Thumbnails' },
+        { key: 'md', px: '6px', use: 'Buttons, inputs, rows' },
+        { key: 'lg', px: '8px', use: 'Covers, cards, toasts' },
+        { key: 'xl', px: '12px', use: 'Panels, dialogs' },
+        { key: 'full', px: '9999px', use: 'Play button, avatar' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
