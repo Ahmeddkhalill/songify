@@ -19,6 +19,14 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const usernamePattern = /^[a-zA-Z0-9_]+$/
 const specialPattern = /[!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?]/
 
+const passwordRules: { label: string; test: (password: string) => boolean }[] = [
+  { label: 'At least 8 characters', test: (password) => password.length >= 8 },
+  { label: 'An uppercase letter', test: (password) => /[A-Z]/.test(password) },
+  { label: 'A lowercase letter', test: (password) => /[a-z]/.test(password) },
+  { label: 'A number', test: (password) => /[0-9]/.test(password) },
+  { label: 'A special character', test: (password) => specialPattern.test(password) },
+]
+
 function isApiError(error: unknown): error is ApiError {
   return (
     typeof error === 'object' &&
@@ -42,14 +50,7 @@ function usernameError(username: string): string | undefined {
 
 function passwordError(mode: Mode, password: string): string | undefined {
   if (mode === 'register') {
-    const strong =
-      password.length >= 8 &&
-      /[a-z]/.test(password) &&
-      /[A-Z]/.test(password) &&
-      /[0-9]/.test(password) &&
-      specialPattern.test(password)
-
-    return strong
+    return passwordRules.every((rule) => rule.test(password))
       ? undefined
       : 'Use at least 8 characters with an uppercase, a lowercase, a number and a special character.'
   }
@@ -118,6 +119,22 @@ function CheckIcon({ size }: { size: number }) {
       aria-hidden="true"
     >
       <path d="M20 6 9 17l-5-5" />
+    </svg>
+  )
+}
+
+function DotIcon({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4" />
     </svg>
   )
 }
@@ -335,6 +352,11 @@ export default function LoginPage() {
   const emailErr = fieldError('email')
   const usernameErr = fieldError('username')
   const passwordErr = fieldError('password')
+  const passwordDescribedBy = isReg
+    ? [serverErrors.password ? 'password-error' : null, 'password-rules'].filter(Boolean).join(' ')
+    : passwordErr
+      ? 'password-error'
+      : undefined
 
   return (
     <div className="min-h-screen flex flex-wrap bg-ink-950 text-ink-100 font-sans text-body">
@@ -520,9 +542,7 @@ export default function LoginPage() {
                   }}
                   onBlur={() => markTouched('password')}
                   aria-invalid={passwordErr ? true : undefined}
-                  aria-describedby={
-                    passwordErr ? 'password-error' : isReg ? 'password-hint' : undefined
-                  }
+                  aria-describedby={passwordDescribedBy || undefined}
                   className={`${inputBase} ${passwordStatus === 'valid' ? 'pr-16' : 'pr-10'} ${borderByStatus[passwordStatus]}`}
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center gap-1.5">
@@ -542,19 +562,45 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
-              {passwordErr ? (
-                <p
-                  id="password-error"
-                  className="m-0 flex gap-1.5 items-center text-caption font-normal text-danger-400"
-                >
-                  <AlertIcon size={14} color="currentColor" />
-                  {passwordErr}
-                </p>
+              {isReg ? (
+                <div className="flex flex-col gap-1.5">
+                  {serverErrors.password && (
+                    <p
+                      id="password-error"
+                      className="m-0 flex gap-1.5 items-center text-caption font-normal text-danger-400"
+                    >
+                      <AlertIcon size={14} color="currentColor" />
+                      {serverErrors.password}
+                    </p>
+                  )}
+                  <ul
+                    id="password-rules"
+                    className="m-0 grid grid-cols-2 gap-x-3 gap-y-1 list-none p-0 text-caption font-normal"
+                  >
+                    {passwordRules.map((rule) => {
+                      const met = rule.test(password)
+                      return (
+                        <li
+                          key={rule.label}
+                          className={`flex items-center gap-1.5 ${met ? 'text-success-400' : 'text-ink-400'}`}
+                        >
+                          <span className="flex-none">
+                            {met ? <CheckIcon size={13} /> : <DotIcon size={13} />}
+                          </span>
+                          {rule.label}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
               ) : (
-                isReg && (
-                  <p id="password-hint" className="m-0 text-caption font-normal text-ink-400">
-                    At least 8 characters with an uppercase, a lowercase, a number and a special
-                    character.
+                passwordErr && (
+                  <p
+                    id="password-error"
+                    className="m-0 flex gap-1.5 items-center text-caption font-normal text-danger-400"
+                  >
+                    <AlertIcon size={14} color="currentColor" />
+                    {passwordErr}
                   </p>
                 )
               )}
