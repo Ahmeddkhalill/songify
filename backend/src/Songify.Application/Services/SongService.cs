@@ -9,25 +9,21 @@ public class SongService(IApplicationDbContext context) : ISongService
 {
     private const int MaxPageSize = 50;
 
-    public async Task<Result<PagedResponse<SongResponse>>> SearchAsync(string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<Result<PaginatedList<SongResponse>>> SearchAsync(RequestFilters filters, CancellationToken cancellationToken = default)
     {
-        page = Math.Max(page, 1);
-        pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
+        var pageNumber = Math.Max(filters.PageNumber, 1);
+        var pageSize = Math.Clamp(filters.PageSize, 1, MaxPageSize);
 
         var query = context.Songs.AsNoTracking();
 
-        var term = search?.Trim().ToLower();
+        var term = filters.SearchValue?.Trim().ToLower();
 
         if (!string.IsNullOrEmpty(term))
             query = query.Where(s => s.Title.ToLower().Contains(term) || s.Artist.ToLower().Contains(term));
 
-        var totalCount = await query.CountAsync(cancellationToken);
-
-        var items = await query
+        var projected = query
             .OrderBy(s => s.Title)
             .ThenBy(s => s.Id)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
             .Select(s => new SongResponse(
                 s.Id,
                 s.Title,
@@ -35,12 +31,11 @@ public class SongService(IApplicationDbContext context) : ISongService
                 s.Album,
                 s.DurationInSeconds,
                 s.CoverImageUrl,
-                s.PreviewUrl))
-            .ToListAsync(cancellationToken);
+                s.PreviewUrl));
 
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        var result = await PaginatedList<SongResponse>.CreateAsync(projected, pageNumber, pageSize, cancellationToken);
 
-        return Result.Success(new PagedResponse<SongResponse>(items, page, pageSize, totalCount, totalPages));
+        return Result.Success(result);
     }
 
     public async Task<Result<SongResponse>> GetByIdAsync(int songId, CancellationToken cancellationToken = default)

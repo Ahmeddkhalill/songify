@@ -5,7 +5,7 @@ namespace Songify.Application.Services;
 
 public interface ISongService
 {
-    Task<Result<PagedResponse<SongResponse>>> SearchAsync(string? search, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<Result<PaginatedList<SongResponse>>> SearchAsync(RequestFilters filters, CancellationToken cancellationToken = default);
 
     Task<Result<SongResponse>> GetByIdAsync(int songId, CancellationToken cancellationToken = default);
 

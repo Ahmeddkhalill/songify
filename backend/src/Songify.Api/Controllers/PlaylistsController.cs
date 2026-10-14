@@ -19,7 +19,7 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         var result = await playlistService.GetByIdAsync(User.GetUserId()!.Value, id, cancellationToken);
@@ -32,12 +32,10 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     {
         var result = await playlistService.CreateAsync(User.GetUserId()!.Value, request, cancellationToken);
 
-        return result.IsSuccess
-            ? CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value)
-            : result.ToProblem();
+        return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value) : result.ToProblem();
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdatePlaylistRequest request, CancellationToken cancellationToken)
     {
         var result = await playlistService.UpdateAsync(User.GetUserId()!.Value, id, request, cancellationToken);
@@ -45,7 +43,7 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var result = await playlistService.DeleteAsync(User.GetUserId()!.Value, id, cancellationToken);
@@ -53,7 +51,7 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
-    [HttpPost("{id:int}/songs")]
+    [HttpPost("{id}/songs")]
     public async Task<IActionResult> AddSong(int id, AddSongToPlaylistRequest request, CancellationToken cancellationToken)
     {
         var result = await playlistService.AddSongAsync(User.GetUserId()!.Value, id, request, cancellationToken);
@@ -61,7 +59,7 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
-    [HttpDelete("{id:int}/songs/{songId:int}")]
+    [HttpDelete("{id}/songs/{songId}")]
     public async Task<IActionResult> RemoveSong(int id, int songId, CancellationToken cancellationToken)
     {
         var result = await playlistService.RemoveSongAsync(User.GetUserId()!.Value, id, songId, cancellationToken);
@@ -69,7 +67,7 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
-    [HttpPut("{id:int}/songs/{songId:int}/position")]
+    [HttpPut("{id}/songs/{songId}/position")]
     public async Task<IActionResult> ReorderSong(int id, int songId, ReorderSongRequest request, CancellationToken cancellationToken)
     {
         var result = await playlistService.ReorderSongAsync(User.GetUserId()!.Value, id, songId, request, cancellationToken);
