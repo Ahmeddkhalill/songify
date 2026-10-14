@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Songify.Api;
 using Songify.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddApiServices(builder.Configuration);
 
@@ -16,6 +20,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseExceptionHandler();
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
