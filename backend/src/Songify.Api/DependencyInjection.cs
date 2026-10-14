@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using Songify.Api.Handlers;
 using Songify.Application;
 using Songify.Infrastructure;
 using System.Text;
@@ -19,6 +20,9 @@ public static class DependencyInjection
         services.AddInfrastructure(configuration);
 
         services.AddFluentValidationAutoValidation();
+
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
 
         services
             .AddSwaggerServices()
