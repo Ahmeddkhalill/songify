@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Songify · My playlists</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0C0E}
+a{color:#EDEEF0;text-decoration:none}a:hover{color:#EDEEF0}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid #F2C35E;outline-offset:2px}
+.btn-ghost:hover{background:#1C1E22;color:#EDEEF0}
+.btn-primary:hover{background:#E3AC3C}
+.card .cv{transition:box-shadow .15s}
+.card:hover .cv{box-shadow:0 0 0 1px #626772}
+.card:hover .card-name{text-decoration:underline;text-underline-offset:3px;text-decoration-color:#626772}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #0B0C0E; color: #EDEEF0; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 20px">
+
+  <header style="height: 64px; border-bottom: 1px solid #24262B; background: #0B0C0E">
+    <div style="max-width: 1280px; height: 100%; margin: 0 auto; padding: 0 32px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+      <a href="Playlists.dc.html" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">
+        <span aria-hidden="true" style="display: grid; grid-template-columns: repeat(2, 8px); gap: 2px">
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #F2C35E"></span>
+        </span>
+        Songify
+      </a>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 8px; color: #B6BAC2; font-size: 13px">
+          <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 50%; background: #24262B; color: #D6D8DD; display: grid; place-items: center; font-size: 12px; font-weight: 600">A</span>
+          ahmed
+        </div>
+        <span aria-hidden="true" style="width: 1px; height: 20px; background: #24262B"></span>
+        <a class="btn-ghost" href="Main.dc.html" style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border-radius: 6px; color: #B6BAC2; font-size: 13px; font-weight: 500">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"></path></svg>
+          Sign out
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1280px; margin: 0 auto; padding: 48px 32px 80px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em">Your playlists</h1>
+        <p style="margin: 0; color: #8E939D; font-size: 13px; line-height: 18px">6 playlists · sorted by last updated</p>
+      </div>
+      <button class="btn-primary" type="button" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px 0 12px; border: 0; border-radius: 6px; background: #F2C35E; color: #1A1406; font-size: 14px; font-weight: 600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        New playlist
+      </button>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 32px 24px">
+      <sc-for list="{{playlists}}" as="p" hint-placeholder-count="6">
+        <li>
+          <a class="card" href="PlaylistDetail.dc.html" style="display: flex; flex-direction: column; gap: 12px">
+            <div class="cv" style="position: relative; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; background: #16171B">
+              <sc-if value="{{p.mosaic}}" hint-placeholder-val="{{true}}">
+                <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr))">
+                  <sc-for list="{{p.covers}}" as="c" hint-placeholder-count="4">
+                    <div style="position: relative; overflow: hidden; background: {{c.bg}}">
+                      <div style="position: absolute; left: {{c.a.x}}; top: {{c.a.y}}; width: {{c.a.w}}; height: {{c.a.h}}; border-radius: {{c.a.r}}; background: {{c.a.c}}"></div>
+                      <div style="position: absolute; left: {{c.b.x}}; top: {{c.b.y}}; width: {{c.b.w}}; height: {{c.b.h}}; border-radius: {{c.b.r}}; background: {{c.b.c}}"></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{p.single}}" hint-placeholder-val="{{false}}">
+                <div style="position: absolute; inset: 0; overflow: hidden; background: {{p.first.bg}}">
+                  <div style="position: absolute; left: {{p.first.a.x}}; top: {{p.first.a.y}}; width: {{p.first.a.w}}; height: {{p.first.a.h}}; border-radius: {{p.first.a.r}}; background: {{p.first.a.c}}"></div>
+                  <div style="position: absolute; left: {{p.first.b.x}}; top: {{p.first.b.y}}; width: {{p.first.b.w}}; height: {{p.first.b.h}}; border-radius: {{p.first.b.r}}; background: {{p.first.b.c}}"></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{p.empty}}" hint-placeholder-val="{{false}}">
+                <div style="position: absolute; inset: 0; display: grid; place-items: center; color: #444851; border: 1px solid #24262B; border-radius: 8px; box-sizing: border-box">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+              <span class="card-name" style="font-size: 15px; line-height: 22px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+              <span style="font-size: 13px; line-height: 18px; color: #8E939D">{{p.meta}}</span>
+            </div>
+          </a>
+        </li>
+      </sc-for>
+    </ul>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const C = (bg, a, b) => ({ bg, a: { x: a[0], y: a[1], w: a[2], h: a[3], r: a[4], c: a[5] }, b: { x: b[0], y: b[1], w: b[2], h: b[3], r: b[4], c: b[5] } });
+    const T = [
+      (b, c, d) => C(b, ['22%','16%','56%','56%','50%',c], ['0','76%','100%','24%','0',d]),
+      (b, c, d) => C(b, ['18%','18%','30%','64%','0',c], ['52%','18%','30%','64%','0',d]),
+      (b, c, d) => C(b, ['0','52%','100%','48%','0',c], ['36%','30%','28%','28%','50%',d]),
+      (b, c, d) => C(b, ['28%','30%','44%','44%','50%',c], ['68%','16%','12%','12%','50%',d]),
+      (b, c, d) => C(b, ['0','0','38%','100%','0',c], ['50%','33%','34%','34%','50%',d]),
+      (b, c, d) => C(b, ['16%','14%','68%','72%','50% 50% 0 0',c], ['0','70%','100%','30%','0',d]),
+      (b, c, d) => C(b, ['18%','18%','64%','64%','50%',c], ['36%','36%','28%','28%','50%',b]),
+      (b, c, d) => C(b, ['28%','0','7%','100%','0',c], ['46%','38%','34%','34%','3%',d])
+    ];
+    const PAL = [
+      ['#C4492E','#F2E3C6','#3B1A12'], ['#1F4E5F','#E9C46A','#F4EDE0'], ['#E9D8A6','#2B2D42','#D1495B'], ['#23307A','#F28F3B','#F4EDE0'],
+      ['#B5651D','#1B1B1B','#EAD7B7'], ['#6B8F71','#F4F1DE','#2F4A36'], ['#101418','#E63973','#101418'], ['#D9D4C7','#3A3A3A','#B23A48'],
+      ['#0E3B43','#8FD5C5','#0E3B43'], ['#4A2C5E','#E8A0BF','#F4EDE0'], ['#F2C14E','#2E294E','#F4EDE0'], ['#3C6E71','#FFD6A5','#1D2D2E'],
+      ['#8C2F39','#F4D6CC','#2B0F13'], ['#2E4057','#66A182','#EDE7D9'], ['#EDE7D9','#C44536','#283D3B'], ['#5F0F40','#FB8B24','#E36414'],
+      ['#1B998B','#F5F1E3','#2D3047'], ['#283618','#DDA15E','#FEFAE0'], ['#D4A373','#264653','#FAEDCD'], ['#14213D','#E5E5E5','#FCA311']
+    ];
+    const cover = (i) => T[i % 8](PAL[i][0], PAL[i][1], PAL[i][2]);
+    const P = (name, updated, ids) => ({
+      name,
+      meta: (ids.length === 1 ? '1 song' : ids.length + ' songs') + ' · ' + updated,
+      mosaic: ids.length >= 4, single: ids.length > 0 && ids.length < 4, empty: ids.length === 0,
+      covers: ids.slice(0, 4).map((id) => cover(id - 1)),
+      first: cover((ids[0] || 1) - 1)
+    });
+    return {
+      playlists: [
+        P('Road Trip Classics', 'Updated today', [3, 1, 20, 7, 8, 5, 15, 16]),
+        P('Pop, right now', 'Updated 2 days ago', [11, 13, 12, 10, 14]),
+        P('Focus, no lyrics', 'Updated last week', [16, 17, 18, 6]),
+        P('90s, loud', 'Updated Sep 28', [4, 8, 19, 2, 1, 7]),
+        P('Gym', 'Updated Sep 12', [9, 14]),
+        P('Ideas for the wedding', 'Updated Aug 30', [])
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Songify · Playlist detail</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0C0E}
+a{color:#EDEEF0;text-decoration:none}a:hover{color:#EDEEF0}
+button,input{font-family:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid #F2C35E;outline-offset:2px}
+input:focus{border-color:#8E939D;outline:none}
+.btn-ghost:hover{background:#1C1E22;color:#EDEEF0}
+.btn-primary:hover{background:#E3AC3C;color:#1A1406}
+.btn-sec:hover{background:#1C1E22;border-color:#444851}
+.btn-del:hover{color:#F2766B;border-color:#5A2621;background:#2A1513}
+.btn-danger:hover{background:#B23A31;color:#FFFFFF}
+.back:hover{color:#EDEEF0}
+.songrow{display:grid;grid-template-columns:20px 28px 36px minmax(0,2.2fr) minmax(0,1.4fr) 56px 36px;column-gap:12px;align-items:center}
+.row{transition:background .12s}
+.row:hover{background:#16171B}
+.row .grip{opacity:0}
+.row:hover .grip,.row .grip:focus-visible{opacity:1}
+.play:hover{background:#24262B;border-color:#444851}
+.play-on:hover{background:#E3AC3C}
+.rm:hover{background:#24262B;color:#EDEEF0}
+.toast-btn:hover{background:#2E3137}
+@media (max-width: 900px){
+  .col-album{display:none !important}
+  .songrow{grid-template-columns:20px 28px 36px minmax(0,1fr) 52px 36px}
+}
+@media (max-width: 600px){
+  .grip-col{display:none !important}
+  .songrow{grid-template-columns:24px 36px minmax(0,1fr) 52px 36px}
+}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #0B0C0E; color: #EDEEF0; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 20px">
+
+  <header style="height: 64px; border-bottom: 1px solid #24262B; background: #0B0C0E">
+    <div style="max-width: 1280px; height: 100%; margin: 0 auto; padding: 0 32px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+      <a href="Playlists.dc.html" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">
+        <span aria-hidden="true" style="display: grid; grid-template-columns: repeat(2, 8px); gap: 2px">
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #F2C35E"></span>
+        </span>
+        Songify
+      </a>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 8px; color: #B6BAC2; font-size: 13px">
+          <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 50%; background: #24262B; color: #D6D8DD; display: grid; place-items: center; font-size: 12px; font-weight: 600">A</span>
+          ahmed
+        </div>
+        <span aria-hidden="true" style="width: 1px; height: 20px; background: #24262B"></span>
+        <a class="btn-ghost" href="Main.dc.html" style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border-radius: 6px; color: #B6BAC2; font-size: 13px; font-weight: 500">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"></path></svg>
+          Sign out
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1280px; margin: 0 auto; padding: 24px 32px 96px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px">
+
+    <div style="display: flex; flex-direction: column; gap: 24px">
+      <a class="back" href="Playlists.dc.html" style="align-self: flex-start; display: flex; align-items: center; gap: 4px; height: 32px; color: #8E939D; font-size: 13px; font-weight: 500">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+        Playlists
+      </a>
+
+      <section style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px">
+        <div style="position: relative; flex: none; width: 200px; height: 200px; border-radius: 8px; overflow: hidden; background: #16171B; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr))">
+          <sc-for list="{{mosaic}}" as="c" hint-placeholder-count="4">
+            <div style="position: relative; overflow: hidden; background: {{c.bg}}">
+              <div style="position: absolute; left: {{c.a.x}}; top: {{c.a.y}}; width: {{c.a.w}}; height: {{c.a.h}}; border-radius: {{c.a.r}}; background: {{c.a.c}}"></div>
+              <div style="position: absolute; left: {{c.b.x}}; top: {{c.b.y}}; width: {{c.b.w}}; height: {{c.b.h}}; border-radius: {{c.b.r}}; background: {{c.b.c}}"></div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">Playlist</span>
+            <sc-if value="{{notRenaming}}" hint-placeholder-val="{{true}}">
+              <h1 style="margin: 0; font-size: 40px; line-height: 44px; font-weight: 600; letter-spacing: -0.025em; text-wrap: balance">{{name}}</h1>
+            </sc-if>
+            <sc-if value="{{renaming}}" hint-placeholder-val="{{false}}">
+              <form onSubmit="{{saveName}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+                <label for="pl-name" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Playlist name</label>
+                <input id="pl-name" type="text" value="{{draft}}" onChange="{{onDraft}}" maxlength="100" style="flex: 1 1 320px; min-width: 0; height: 52px; padding: 0 12px; border-radius: 6px; border: 1px solid #626772; background: #111215; color: #EDEEF0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em">
+                <button class="btn-primary" type="submit" style="height: 40px; padding: 0 16px; border: 0; border-radius: 6px; background: #F2C35E; color: #1A1406; font-size: 14px; font-weight: 600">Save</button>
+                <button class="btn-sec" type="button" onClick="{{cancelRename}}" style="height: 40px; padding: 0 14px; border: 1px solid #2E3137; border-radius: 6px; background: transparent; color: #D6D8DD; font-size: 14px; font-weight: 500">Cancel</button>
+              </form>
+            </sc-if>
+            <p style="margin: 0; max-width: 560px; font-size: 15px; line-height: 22px; color: #B6BAC2">Long drives, loud choruses. Everyone knows the words.</p>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; line-height: 18px; color: #8E939D">
+            <span>{{countLabel}}</span>
+            <span aria-hidden="true" style="width: 3px; height: 3px; border-radius: 50%; background: #444851"></span>
+            <span>{{totalLabel}}</span>
+            <span aria-hidden="true" style="width: 3px; height: 3px; border-radius: 50%; background: #444851"></span>
+            <span>Updated today</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px">
+            <a class="btn-primary" href="AddSongs.dc.html" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px 0 12px; border-radius: 6px; background: #F2C35E; color: #1A1406; font-size: 14px; font-weight: 600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+              Add songs
+            </a>
+            <button class="btn-sec" type="button" onClick="{{startRename}}" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 12px; border: 1px solid #2E3137; border-radius: 6px; background: transparent; color: #D6D8DD; font-size: 14px; font-weight: 500">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path></svg>
+              Rename
+            </button>
+            <button class="btn-sec btn-del" type="button" onClick="{{askDelete}}" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 12px; border: 1px solid #2E3137; border-radius: 6px; background: transparent; color: #D6D8DD; font-size: 14px; font-weight: 500">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section aria-label="Songs" style="display: flex; flex-direction: column">
+      <div class="songrow" style="height: 36px; padding: 0 12px; border-bottom: 1px solid #24262B; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">
+        <span class="grip-col"></span>
+        <span style="text-align: right">#</span>
+        <span></span>
+        <span>Title</span>
+        <span class="col-album">Album</span>
+        <span style="display: flex; justify-content: flex-end" aria-label="Duration">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+        </span>
+        <span></span>
+      </div>
+
+      <ol style="list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px" onDragOver="{{listOver}}">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+          <li class="row songrow" draggable="true" onDragStart="{{r.dragStart}}" onDragOver="{{r.dragOver}}" onDrop="{{r.drop}}" onDragEnd="{{r.dragEnd}}" style="position: relative; min-height: 60px; padding: 0 12px; border-radius: 6px; opacity: {{r.rowOpacity}}">
+            <sc-if value="{{r.dropBefore}}" hint-placeholder-val="{{false}}">
+              <span aria-hidden="true" style="position: absolute; left: 0; right: 0; top: -2px; height: 2px; border-radius: 1px; background: #F2C35E"></span>
+            </sc-if>
+            <button class="grip grip-col" type="button" aria-label="{{r.gripLabel}}" onKeyDown="{{r.key}}" style="width: 20px; height: 32px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: #8E939D; cursor: grab; display: grid; place-items: center">
+              <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.4"></circle><circle cx="9" cy="3" r="1.4"></circle><circle cx="3" cy="8" r="1.4"></circle><circle cx="9" cy="8" r="1.4"></circle><circle cx="3" cy="13" r="1.4"></circle><circle cx="9" cy="13" r="1.4"></circle></svg>
+            </button>
+            <span style="text-align: right; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: {{r.posColor}}; font-variant-numeric: tabular-nums">{{r.pos}}</span>
+            <sc-if value="{{r.notPlaying}}" hint-placeholder-val="{{true}}">
+              <button class="play" type="button" aria-label="{{r.playLabel}}" onClick="{{r.play}}" style="width: 36px; height: 36px; padding: 0; border: 1px solid #2E3137; border-radius: 50%; background: transparent; color: #D6D8DD; display: grid; place-items: center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"></path></svg>
+              </button>
+            </sc-if>
+            <sc-if value="{{r.isPlaying}}" hint-placeholder-val="{{false}}">
+              <button class="play-on" type="button" aria-label="{{r.playLabel}}" aria-pressed="true" onClick="{{r.play}}" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: #F2C35E; color: #1A1406; display: grid; place-items: center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+              </button>
+            </sc-if>
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 0">
+              <div style="position: relative; flex: none; width: 40px; height: 40px; border-radius: 4px; overflow: hidden; background: {{r.cover.bg}}">
+                <div style="position: absolute; left: {{r.cover.a.x}}; top: {{r.cover.a.y}}; width: {{r.cover.a.w}}; height: {{r.cover.a.h}}; border-radius: {{r.cover.a.r}}; background: {{r.cover.a.c}}"></div>
+                <div style="position: absolute; left: {{r.cover.b.x}}; top: {{r.cover.b.y}}; width: {{r.cover.b.w}}; height: {{r.cover.b.h}}; border-radius: {{r.cover.b.r}}; background: {{r.cover.b.c}}"></div>
+              </div>
+              <div style="display: flex; flex-direction: column; min-width: 0">
+                <span style="font-weight: 500; color: {{r.titleColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
+                <span style="font-size: 13px; line-height: 18px; color: #8E939D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.artist}}</span>
+              </div>
+            </div>
+            <span class="col-album" style="font-size: 13px; color: #8E939D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.album}}</span>
+            <span style="text-align: right; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: #8E939D; font-variant-numeric: tabular-nums">{{r.dur}}</span>
+            <button class="rm" type="button" aria-label="{{r.removeLabel}}" onClick="{{r.remove}}" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #8E939D; display: grid; place-items: center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+            </button>
+            <sc-if value="{{r.isPlaying}}" hint-placeholder-val="{{false}}">
+              <div aria-hidden="true" style="position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; background: #24262B; border-radius: 1px; overflow: hidden">
+                <div style="height: 100%; width: {{r.progressW}}; background: #F2C35E; transition: width 1s linear"></div>
+              </div>
+            </sc-if>
+          </li>
+        </sc-for>
+        <sc-if value="{{dropEnd}}" hint-placeholder-val="{{false}}">
+          <li aria-hidden="true" style="height: 2px; border-radius: 1px; background: #F2C35E"></li>
+        </sc-if>
+      </ol>
+      <p style="margin: 16px 0 0; padding: 0 12px; font-size: 12px; line-height: 16px; color: #8E939D">Drag rows to reorder, or focus a handle and use the arrow keys. Previews play 30 seconds.</p>
+    </section>
+  </main>
+
+  <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 6px 6px 14px; box-sizing: border-box; background: #1C1E22; border: 1px solid #2E3137; border-radius: 8px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5); font-size: 14px; color: #EDEEF0; white-space: nowrap; z-index: 30">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D6D8DD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+      <span>{{toastText}}</span>
+      <sc-if value="{{toastUndo}}" hint-placeholder-val="{{true}}">
+        <button class="toast-btn" type="button" onClick="{{undo}}" style="height: 36px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: #F2C35E; font-size: 14px; font-weight: 600">Undo</button>
+      </sc-if>
+      <button class="toast-btn" type="button" aria-label="Dismiss" onClick="{{dismiss}}" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #8E939D; display: grid; place-items: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{confirm}}" hint-placeholder-val="{{false}}">
+    <div style="position: fixed; inset: 0; background: rgba(5, 6, 8, 0.72); display: grid; place-items: center; padding: 24px; z-index: 40">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="del-title" aria-describedby="del-desc" onKeyDown="{{dialogKey}}" style="width: 100%; max-width: 420px; box-sizing: border-box; padding: 24px; background: #111215; border: 1px solid #2E3137; border-radius: 12px; box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55); display: flex; flex-direction: column; gap: 20px">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <h2 id="del-title" style="margin: 0; font-size: 18px; line-height: 26px; font-weight: 600">Delete “{{name}}”?</h2>
+          <p id="del-desc" style="margin: 0; color: #B6BAC2">The playlist and its song order will be removed. The songs stay in the catalog. This can’t be undone.</p>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px">
+          <button class="btn-sec" type="button" onClick="{{cancelDelete}}" style="height: 40px; padding: 0 16px; border: 1px solid #2E3137; border-radius: 6px; background: transparent; color: #D6D8DD; font-size: 14px; font-weight: 500">Cancel</button>
+          <a class="btn-danger" href="Playlists.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 6px; background: #C8433A; color: #FFFFFF; font-size: 14px; font-weight: 600">Delete playlist</a>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { order: [3, 1, 20, 7, 8, 5, 15, 16], playing: 20, t: 12, live: false, drag: null, over: null, toast: null, renaming: false, name: 'Road Trip Classics', draft: 'Road Trip Classics', confirm: false };
+  }
+  componentDidMount() {
+    this.tick = setInterval(() => {
+      const s = this.state;
+      if (!s.live || s.playing == null) return;
+      if (s.t >= 30) this.setState({ playing: null, t: 0 });
+      else this.setState({ t: s.t + 1 });
+    }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this.tick); clearTimeout(this.tt); }
+  showToast(toast) {
+    clearTimeout(this.tt);
+    this.setState({ toast });
+    this.tt = setTimeout(() => this.setState({ toast: null }), 6000);
+  }
+  move(id, to) {
+    const o = this.state.order.slice();
+    const from = o.indexOf(id);
+    if (from < 0 || to < 0 || to > o.length) return;
+    if (to > from) to--;
+    if (to === from) return;
+    o.splice(from, 1);
+    o.splice(to, 0, id);
+    this.setState({ order: o });
+  }
+  renderVals() {
+    const C = (bg, a, b) => ({ bg, a: { x: a[0], y: a[1], w: a[2], h: a[3], r: a[4], c: a[5] }, b: { x: b[0], y: b[1], w: b[2], h: b[3], r: b[4], c: b[5] } });
+    const T = [
+      (b, c, d) => C(b, ['22%','16%','56%','56%','50%',c], ['0','76%','100%','24%','0',d]),
+      (b, c, d) => C(b, ['18%','18%','30%','64%','0',c], ['52%','18%','30%','64%','0',d]),
+      (b, c, d) => C(b, ['0','52%','100%','48%','0',c], ['36%','30%','28%','28%','50%',d]),
+      (b, c, d) => C(b, ['28%','30%','44%','44%','50%',c], ['68%','16%','12%','12%','50%',d]),
+      (b, c, d) => C(b, ['0','0','38%','100%','0',c], ['50%','33%','34%','34%','50%',d]),
+      (b, c, d) => C(b, ['16%','14%','68%','72%','50% 50% 0 0',c], ['0','70%','100%','30%','0',d]),
+      (b, c, d) => C(b, ['18%','18%','64%','64%','50%',c], ['36%','36%','28%','28%','50%',b]),
+      (b, c, d) => C(b, ['28%','0','7%','100%','0',c], ['46%','38%','34%','34%','3%',d])
+    ];
+    const PAL = [
+      ['#C4492E','#F2E3C6','#3B1A12'], ['#1F4E5F','#E9C46A','#F4EDE0'], ['#E9D8A6','#2B2D42','#D1495B'], ['#23307A','#F28F3B','#F4EDE0'],
+      ['#B5651D','#1B1B1B','#EAD7B7'], ['#6B8F71','#F4F1DE','#2F4A36'], ['#101418','#E63973','#101418'], ['#D9D4C7','#3A3A3A','#B23A48'],
+      ['#0E3B43','#8FD5C5','#0E3B43'], ['#4A2C5E','#E8A0BF','#F4EDE0'], ['#F2C14E','#2E294E','#F4EDE0'], ['#3C6E71','#FFD6A5','#1D2D2E'],
+      ['#8C2F39','#F4D6CC','#2B0F13'], ['#2E4057','#66A182','#EDE7D9'], ['#EDE7D9','#C44536','#283D3B'], ['#5F0F40','#FB8B24','#E36414'],
+      ['#1B998B','#F5F1E3','#2D3047'], ['#283618','#DDA15E','#FEFAE0'], ['#D4A373','#264653','#FAEDCD'], ['#14213D','#E5E5E5','#FCA311']
+    ];
+    const cover = (i) => T[i % 8](PAL[i][0], PAL[i][1], PAL[i][2]);
+    const SONGS = [
+      { id: 1, title: "Bohemian Rhapsody", artist: "Queen", album: "A Night at the Opera", d: 355 },
+      { id: 3, title: "Hotel California", artist: "Eagles", album: "Hotel California", d: 391 },
+      { id: 5, title: "Billie Jean", artist: "Michael Jackson", album: "Thriller", d: 294 },
+      { id: 7, title: "Sweet Child O’ Mine", artist: "Guns N’ Roses", album: "Appetite for Destruction", d: 356 },
+      { id: 8, title: "Wonderwall", artist: "Oasis", album: "(What’s the Story) Morning Glory?", d: 259 },
+      { id: 15, title: "Somebody That I Used to Know (feat. Kimbra)", artist: "Gotye", album: "Making Mirrors", d: 244 },
+      { id: 16, title: "Take Five", artist: "The Dave Brubeck Quartet", album: "Time Out", d: 324 },
+      { id: 20, title: "Africa", artist: "TOTO", album: "Toto IV", d: 295 }
+    ];
+    const S = {};
+    SONGS.forEach((g) => { S[g.id] = g; });
+    const fmt = (x) => Math.floor(x / 60) + ':' + String(x % 60).padStart(2, '0');
+    const s = this.state;
+    const order = s.order;
+    const fromIdx = s.drag != null ? order.indexOf(s.drag) : -1;
+    const showDrop = (i) => s.drag != null && s.over === i && i !== fromIdx && i !== fromIdx + 1;
+
+    const rows = order.map((id, i) => {
+      const g = S[id];
+      const playing = s.playing === id;
+      return {
+        title: g.title, artist: g.artist, album: g.album, pos: i + 1, dur: fmt(g.d), cover: cover(g.id - 1),
+        isPlaying: playing, notPlaying: !playing,
+        progressW: Math.round((s.t / 30) * 100) + '%',
+        titleColor: playing ? '#F2C35E' : '#EDEEF0',
+        posColor: playing ? '#F2C35E' : '#8E939D',
+        rowOpacity: s.drag === id ? '0.4' : '1',
+        dropBefore: showDrop(i),
+        playLabel: (playing ? 'Pause preview of ' : 'Play 30-second preview of ') + g.title,
+        removeLabel: 'Remove ' + g.title + ' from playlist',
+        gripLabel: 'Reorder ' + g.title + ', position ' + (i + 1) + '. Use arrow keys to move.',
+        play: () => this.setState(playing ? { playing: null, t: 0 } : { playing: id, t: 0, live: true }),
+        remove: () => {
+          const st = this.state;
+          const idx = st.order.indexOf(id);
+          this.setState({ order: st.order.filter((x) => x !== id), playing: st.playing === id ? null : st.playing });
+          this.showToast({ undo: true, text: 'Removed “' + g.title + '”', id, idx });
+        },
+        dragStart: (e) => {
+          e.dataTransfer.effectAllowed = 'move';
+          try { e.dataTransfer.setData('text/plain', String(id)); } catch (err) {}
+          this.setState({ drag: id });
+        },
+        dragOver: (e) => {
+          if (this.state.drag == null) return;
+          e.preventDefault();
+          const r = e.currentTarget.getBoundingClientRect();
+          const idx = i + (e.clientY > r.top + r.height / 2 ? 1 : 0);
+          if (idx !== this.state.over) this.setState({ over: idx });
+        },
+        drop: (e) => {
+          e.preventDefault();
+          const st = this.state;
+          if (st.drag != null && st.over != null) this.move(st.drag, st.over);
+          this.setState({ drag: null, over: null });
+        },
+        dragEnd: () => this.setState({ drag: null, over: null }),
+        key: (e) => {
+          const cur = this.state.order.indexOf(id);
+          if (e.key === 'ArrowUp' && cur > 0) { e.preventDefault(); this.move(id, cur - 1); }
+          if (e.key === 'ArrowDown' && cur < this.state.order.length - 1) { e.preventDefault(); this.move(id, cur + 2); }
+        }
+      };
+    });
+
+    const total = order.reduce((n, id) => n + S[id].d, 0);
+    const mins = Math.round(total / 60);
+    const totalLabel = mins >= 60 ? Math.floor(mins / 60) + ' hr ' + (mins % 60) + ' min' : mins + ' min';
+    const mos = order.slice(0, 4).map((id) => cover(id - 1));
+    const mosaic = mos.length >= 4 ? mos : (mos.length ? [mos[0], mos[0], mos[0], mos[0]] : []);
+    const t = s.toast;
+
+    return {
+      rows, mosaic,
+      dropEnd: s.drag != null && s.over === order.length && fromIdx !== order.length - 1,
+      listOver: (e) => { if (this.state.drag != null) e.preventDefault(); },
+      name: s.name, draft: s.draft,
+      renaming: s.renaming, notRenaming: !s.renaming,
+      countLabel: order.length === 1 ? '1 song' : order.length + ' songs',
+      totalLabel,
+      startRename: () => this.setState({ renaming: true, draft: this.state.name }),
+      cancelRename: () => this.setState({ renaming: false }),
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      saveName: (e) => {
+        e.preventDefault();
+        const v = this.state.draft.trim();
+        if (!v) return;
+        this.setState({ name: v, renaming: false });
+        this.showToast({ undo: false, text: 'Renamed to “' + v + '”' });
+      },
+      confirm: s.confirm,
+      askDelete: () => this.setState({ confirm: true }),
+      cancelDelete: () => this.setState({ confirm: false }),
+      dialogKey: (e) => { if (e.key === 'Escape') this.setState({ confirm: false }); },
+      hasToast: !!t, toastText: t ? t.text : '', toastUndo: !!(t && t.undo),
+      undo: () => {
+        const st = this.state;
+        const tt = st.toast;
+        if (!tt || tt.id == null || st.order.indexOf(tt.id) >= 0) return;
+        const o = st.order.slice();
+        o.splice(Math.min(tt.idx, o.length), 0, tt.id);
+        clearTimeout(this.tt);
+        this.setState({ order: o, toast: null });
+      },
+      dismiss: () => { clearTimeout(this.tt); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
