@@ -12,11 +12,17 @@ builder.Services.AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await context.Database.MigrateAsync();
     await ApplicationDbSeeder.SeedAsync(context);
+}
+catch (Exception exception)
+{
+    Log.Fatal(exception, "Database migration or seeding failed during startup");
+    throw;
 }
 
 app.UseExceptionHandler();
