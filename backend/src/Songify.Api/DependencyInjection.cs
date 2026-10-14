@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using Songify.Api.Handlers;
