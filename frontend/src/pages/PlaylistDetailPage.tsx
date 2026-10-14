@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { ApiError } from '../api/client'
-import { deletePlaylist, getPlaylist, removeSongFromPlaylist } from '../api/playlists'
-import type { PlaylistDetail, PlaylistSong } from '../api/types'
+import {
+  addSongToPlaylist,
+  deletePlaylist,
+  getPlaylist,
+  removeSongFromPlaylist,
+} from '../api/playlists'
+import type { PlaylistDetail, PlaylistSong, Song } from '../api/types'
+import AddSongsPanel from '../components/AddSongsPanel'
 import Button from '../components/Button'
 import Dialog from '../components/Dialog'
 import ErrorBanner from '../components/ErrorBanner'
@@ -238,6 +244,7 @@ export default function PlaylistDetailPage() {
   const [playlist, setPlaylist] = useState<PlaylistDetail | null>(null)
   const [status, setStatus] = useState<Status>('loading')
   const [renameOpen, setRenameOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deletePending, setDeletePending] = useState(false)
   const [deleteFailed, setDeleteFailed] = useState(false)
@@ -294,6 +301,35 @@ export default function PlaylistDetailPage() {
       }
     },
     [id, playlist],
+  )
+
+  const addSong = useCallback(
+    async (song: Song) => {
+      setPlaylist((current) =>
+        current
+          ? {
+              ...current,
+              songs: [
+                ...current.songs,
+                { ...song, position: current.songs.length + 1, addedAt: new Date().toISOString() },
+              ],
+            }
+          : current,
+      )
+
+      try {
+        await addSongToPlaylist(id, { songId: song.id })
+      } catch (error) {
+        if (isApiError(error) && error.status === 409) {
+          return
+        }
+        setPlaylist((current) =>
+          current ? { ...current, songs: current.songs.filter((s) => s.id !== song.id) } : current,
+        )
+        throw error
+      }
+    },
+    [id],
   )
 
   async function confirmDelete() {
@@ -363,7 +399,7 @@ export default function PlaylistDetailPage() {
                 <span>{formatDuration(totalSeconds)}</span>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
-                <Button className="pl-3" onClick={() => navigate(`/playlists/${id}/songs`)}>
+                <Button className="pl-3" onClick={() => setAddOpen(true)}>
                   <PlusIcon />
                   Add songs
                 </Button>
@@ -405,7 +441,7 @@ export default function PlaylistDetailPage() {
                 later by dragging.
               </p>
             </div>
-            <Button variant="secondary" className="pl-3" onClick={() => navigate(`/playlists/${id}/songs`)}>
+            <Button variant="secondary" className="pl-3" onClick={() => setAddOpen(true)}>
               <svg
                 width="16"
                 height="16"
@@ -460,6 +496,13 @@ export default function PlaylistDetailPage() {
           </section>
         )}
       </main>
+
+      <AddSongsPanel
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        addedSongIds={songs.map((song) => song.id)}
+        onAddSong={addSong}
+      />
 
       <RenamePlaylistDialog
         open={renameOpen}
