@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Songify · Loading playlist</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0C0E}
+a{color:#EDEEF0;text-decoration:none}a:hover{color:#EDEEF0}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid #F2C35E;outline-offset:2px}
+.btn-ghost:hover{background:#1C1E22;color:#EDEEF0}
+.back:hover{color:#EDEEF0}
+.sk{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@media (prefers-reduced-motion: reduce){.sk{animation:none}}
+.songrow{display:grid;grid-template-columns:20px 28px 36px minmax(0,2.2fr) minmax(0,1.4fr) 56px 36px;column-gap:12px;align-items:center}
+@media (max-width: 900px){.col-album{display:none !important}.songrow{grid-template-columns:20px 28px 36px minmax(0,1fr) 52px 36px}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #0B0C0E; color: #EDEEF0; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 20px">
+
+  <header style="height: 64px; border-bottom: 1px solid #24262B; background: #0B0C0E">
+    <div style="max-width: 1280px; height: 100%; margin: 0 auto; padding: 0 32px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+      <a href="Playlists.dc.html" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">
+        <span aria-hidden="true" style="display: grid; grid-template-columns: repeat(2, 8px); gap: 2px">
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #EDEEF0"></span>
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #F2C35E"></span>
+        </span>
+        Songify
+      </a>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 8px; color: #B6BAC2; font-size: 13px">
+          <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 50%; background: #24262B; color: #D6D8DD; display: grid; place-items: center; font-size: 12px; font-weight: 600">A</span>
+          ahmed
+        </div>
+        <span aria-hidden="true" style="width: 1px; height: 20px; background: #24262B"></span>
+        <a class="btn-ghost" href="Main.dc.html" style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border-radius: 6px; color: #B6BAC2; font-size: 13px; font-weight: 500">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"></path></svg>
+          Sign out
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main aria-busy="true" style="max-width: 1280px; margin: 0 auto; padding: 24px 32px 96px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px">
+    <p role="status" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Loading playlist</p>
+    <div style="display: flex; flex-direction: column; gap: 24px">
+      <a class="back" href="Playlists.dc.html" style="align-self: flex-start; display: flex; align-items: center; gap: 4px; height: 32px; color: #8E939D; font-size: 13px; font-weight: 500">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+        Playlists
+      </a>
+      <section aria-hidden="true" style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px">
+        <div class="sk" style="flex: none; width: 200px; height: 200px; border-radius: 8px; background: #16171B"></div>
+        <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-direction: column; gap: 12px">
+            <div class="sk" style="width: 64px; height: 10px; border-radius: 3px; background: #1C1E22"></div>
+            <div class="sk" style="width: 46%; height: 36px; border-radius: 4px; background: #1C1E22"></div>
+            <div class="sk" style="width: 34%; height: 14px; border-radius: 3px; background: #1C1E22"></div>
+          </div>
+          <div class="sk" style="width: 200px; height: 12px; border-radius: 3px; background: #1C1E22"></div>
+          <div style="display: flex; gap: 8px; padding-top: 4px">
+            <div class="sk" style="width: 120px; height: 40px; border-radius: 6px; background: #1C1E22"></div>
+            <div class="sk" style="width: 100px; height: 40px; border-radius: 6px; background: #1C1E22"></div>
+            <div class="sk" style="width: 92px; height: 40px; border-radius: 6px; background: #1C1E22"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section aria-hidden="true" style="display: flex; flex-direction: column">
+      <div class="songrow" style="height: 36px; padding: 0 12px; border-bottom: 1px solid #24262B; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #8E939D">
+        <span></span><span style="text-align: right">#</span><span></span><span>Title</span><span class="col-album">Album</span><span></span><span></span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 8px">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+          <div class="songrow" style="min-height: 60px; padding: 0 12px">
+            <span></span>
+            <div class="sk" style="justify-self: end; width: 12px; height: 10px; border-radius: 3px; background: #1C1E22"></div>
+            <div class="sk" style="width: 36px; height: 36px; border-radius: 50%; background: #16171B"></div>
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0">
+              <div class="sk" style="flex: none; width: 40px; height: 40px; border-radius: 4px; background: #1C1E22"></div>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+                <div class="sk" style="width: {{r.t}}; height: 12px; border-radius: 3px; background: #1C1E22"></div>
+                <div class="sk" style="width: {{r.a}}; height: 10px; border-radius: 3px; background: #1C1E22"></div>
+              </div>
+            </div>
+            <div class="sk col-album" style="width: {{r.al}}; height: 10px; border-radius: 3px; background: #1C1E22"></div>
+            <div class="sk" style="justify-self: end; width: 32px; height: 10px; border-radius: 3px; background: #1C1E22"></div>
+            <span></span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const t = ['46%', '34%', '52%', '40%', '58%', '30%', '44%', '50%'];
+    const a = ['28%', '36%', '24%', '32%', '26%', '34%', '30%', '22%'];
+    const al = ['40%', '52%', '34%', '46%', '38%', '56%', '42%', '36%'];
+    return { rows: t.map((x, i) => ({ t: x, a: a[i], al: al[i] })) };
+  }
+}
+</script>
+</body>
+</html>
