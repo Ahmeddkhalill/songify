@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useAudioPlayer } from '../audio/AudioPlayerContext'
 import type { ApiError } from '../api/client'
 import {
   addSongToPlaylist,
@@ -104,10 +105,66 @@ function DeleteIcon() {
   )
 }
 
-function SongRow({ song, position, onRemove }: { song: PlaylistSong; position: number; onRemove: () => void }) {
+function PlayIcon() {
   return (
-    <li className={`${rowGrid} relative min-h-[60px] px-3 rounded-md transition-colors hover:bg-ink-850`}>
-      <span className="text-right font-mono text-small text-ink-400 tabular-nums">{position}</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  )
+}
+
+function PauseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" />
+    </svg>
+  )
+}
+
+function SongRow({
+  song,
+  position,
+  playing,
+  onTogglePlay,
+  onRemove,
+}: {
+  song: PlaylistSong
+  position: number
+  playing: boolean
+  onTogglePlay: () => void
+  onRemove: () => void
+}) {
+  const hasPreview = song.previewUrl !== null
+
+  return (
+    <li className={`${rowGrid} group relative min-h-[60px] px-3 rounded-md transition-colors hover:bg-ink-850`}>
+      <span className="relative justify-self-end flex items-center h-9">
+        {hasPreview ? (
+          <>
+            <button
+              type="button"
+              onClick={onTogglePlay}
+              aria-label={playing ? `Pause ${song.title}` : `Play ${song.title}`}
+              className={`absolute inset-0 grid place-items-center rounded-sm ${
+                playing
+                  ? 'text-accent'
+                  : 'text-ink-100 opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
+              }`}
+            >
+              {playing ? <PauseIcon /> : <PlayIcon />}
+            </button>
+            <span
+              className={`font-mono text-small text-ink-400 tabular-nums ${
+                playing ? 'opacity-0' : 'group-hover:opacity-0'
+              }`}
+            >
+              {position}
+            </span>
+          </>
+        ) : (
+          <span className="font-mono text-small text-ink-400 tabular-nums">{position}</span>
+        )}
+      </span>
       <div className="flex items-center gap-3 min-w-0 py-2.5">
         <div className="flex-none w-10 h-10 rounded-sm overflow-hidden bg-ink-850">
           {song.coverImageUrl && (
@@ -115,7 +172,9 @@ function SongRow({ song, position, onRemove }: { song: PlaylistSong; position: n
           )}
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="font-medium text-ink-100 truncate">{song.title}</span>
+          <span className={`font-medium truncate ${playing ? 'text-accent' : 'text-ink-100'}`}>
+            {song.title}
+          </span>
           <span className="text-small text-ink-400 truncate">{song.artist}</span>
         </div>
       </div>
@@ -239,6 +298,7 @@ function NotFoundState() {
 export default function PlaylistDetailPage() {
   const params = useParams()
   const navigate = useNavigate()
+  const { playingId, toggle } = useAudioPlayer()
   const id = Number(params.id)
 
   const [playlist, setPlaylist] = useState<PlaylistDetail | null>(null)
@@ -489,6 +549,8 @@ export default function PlaylistDetailPage() {
                   key={song.id}
                   song={song}
                   position={index + 1}
+                  playing={playingId === song.id}
+                  onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl)}
                   onRemove={() => removeSong(song)}
                 />
               ))}
