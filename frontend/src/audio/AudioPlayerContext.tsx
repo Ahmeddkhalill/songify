@@ -8,45 +8,70 @@ import {
   type ReactNode,
 } from 'react'
 
+interface PreviewTrack {
+  id: number
+  url: string
+}
+
 interface AudioPlayerContextValue {
   playingId: number | null
-  toggle: (id: number, url: string) => void
+  toggle: (id: number, url: string, queue?: PreviewTrack[]) => void
 }
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(undefined)
 
 export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null)
+  const queueRef = useRef<PreviewTrack[] | null>(null)
   const [playingId, setPlayingId] = useState<number | null>(null)
 
-  const toggle = useCallback(
-    (id: number, url: string) => {
-      const audio = audioRef.current
-      if (!audio) {
-        return
-      }
+  const play = useCallback((id: number, url: string) => {
+    const audio = audioRef.current
+    if (!audio) {
+      return
+    }
 
+    audio.src = url
+    audio.play().catch(() => {
+      setPlayingId((current) => (current === id ? null : current))
+    })
+    setPlayingId(id)
+  }, [])
+
+  const toggle = useCallback(
+    (id: number, url: string, queue?: PreviewTrack[]) => {
       if (playingId === id) {
-        audio.pause()
+        audioRef.current?.pause()
         setPlayingId(null)
         return
       }
 
-      audio.src = url
-      audio.play().catch(() => {
-        setPlayingId((current) => (current === id ? null : current))
-      })
-      setPlayingId(id)
+      queueRef.current = queue ?? null
+      play(id, url)
     },
-    [playingId],
+    [playingId, play],
   )
+
+  const playNext = useCallback(() => {
+    const queue = queueRef.current
+    const index = queue ? queue.findIndex((track) => track.id === playingId) : -1
+    const next = index >= 0 ? queue![index + 1] : undefined
+
+    if (next) {
+      play(next.id, next.url)
+      return
+    }
+
+    queueRef.current = null
+    setPlayingId(null)
+  }, [playingId, play])
 
   const value = useMemo(() => ({ playingId, toggle }), [playingId, toggle])
 
   return (
     <AudioPlayerContext.Provider value={value}>
       {children}
-      <audio ref={audioRef} onEnded={() => setPlayingId(null)} />
+      <audio ref={audioRef} onEnded={playNext} />
     </AudioPlayerContext.Provider>
   )
 }
