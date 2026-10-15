@@ -1,0 +1,10 @@
+global using System.Net;
+global using System.Net.Http.Headers;
+global using System.Net.Http.Json;
+global using System.Text.Json;
+global using FluentAssertions;
+global using Songify.Api.IntegrationTests.Infrastructure;
+global using Songify.Application.Contracts.Auth;
+global using Songify.Application.Contracts.Playlists;
+global using Songify.Application.Contracts.Songs;
+global using Xunit;
