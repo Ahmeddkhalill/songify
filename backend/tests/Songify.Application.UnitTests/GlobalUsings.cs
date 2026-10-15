@@ -1,0 +1,13 @@
+global using FluentAssertions;
+global using Microsoft.EntityFrameworkCore;
+global using NSubstitute;
+global using Songify.Application.Abstractions;
+global using Songify.Application.Contracts.Auth;
+global using Songify.Application.Contracts.Common;
+global using Songify.Application.Contracts.Playlists;
+global using Songify.Application.Contracts.Songs;
+global using Songify.Application.Errors;
+global using Songify.Application.Services;
+global using Songify.Application.UnitTests.TestKit;
+global using Songify.Domain.Entities;
+global using Xunit;

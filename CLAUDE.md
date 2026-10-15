@@ -11,6 +11,10 @@ PostgreSQL via Docker. Monorepo: `backend/`, `frontend/`, `docs/`, `tools/`.
   asking first.
 - Never add features that were not asked for.
 - Explain what you changed and why, briefly. Do not narrate every step.
+- Never run git commit or git push. Leave changes unstaged for review.
+- Never add Co-Authored-By, Generated-with, or any other AI attribution to
+  commit messages or pull request descriptions.
+- Never run git commit or git push. Leave changes unstaged for review.
 
 ## Backend architecture
 

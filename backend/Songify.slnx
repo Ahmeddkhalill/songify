@@ -5,4 +5,7 @@
     <Project Path="src/Songify.Domain/Songify.Domain.csproj" />
     <Project Path="src/Songify.Infrastructure/Songify.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Songify.Application.UnitTests/Songify.Application.UnitTests.csproj" />
+  </Folder>
 </Solution>
