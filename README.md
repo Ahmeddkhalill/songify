@@ -307,11 +307,21 @@ this repository.
 
 ## AI-assisted development
 
-I used AI assistance throughout, in the way I use it at work: to review my
-reasoning, to answer things I had not done before, and to generate code I then
-read and edited. The architecture, the database choice, the ownership model, the
-error-handling approach and the scope boundaries above are my decisions —
-several of them came out of disagreeing with a first suggestion. Some examples:
+I used AI throughout, and picked the tool by the kind of task rather than
+sticking to one:
+
+- **GitHub Copilot** — most of the time, for completions while writing code.
+- **Claude** — talking through architecture, reviewing decisions, and the
+  conventions in `CLAUDE.md`.
+- **Claude Code** — implementing some parts against those conventions.
+- **Claude's design tool** — the interface. The canvas is open to view:
+  [Songify design canvas](https://claude.ai/artifact/Fod1Bdfirrie86vkhDoVpP).
+  Its artboards and tokens are exported into `docs/design/`.
+- **ChatGPT and Gemini** — individual questions along the way.
+
+The architecture, the database choice, the ownership model, the error-handling
+approach and the scope boundaries above are my decisions. Several came out of
+disagreeing with a first suggestion:
 
 - The first proposal was a rich domain model with private setters and factory
   methods. I chose the service-oriented design instead, for the reasons in the
@@ -323,16 +333,17 @@ several of them came out of disagreeing with a first suggestion. Some examples:
   and the database moved to the API host's own Postgres once an external
   connection proved impossible through the free tier's outbound firewall.
 
-`CLAUDE.md` holds the conventions the assistants were held to — no comments, no
-unrequested packages, the layering rules, and the commit style.
+### On the chat contexts
 
-The task asked for the chat contexts to be submitted. I have to be straight
-about this one: the work was spread across several different assistants chosen
-per task, including an editor-integrated one for most of the routine code, and I
-have no complete or faithful export of those sessions to hand over. Rather than
-submit a partial or reconstructed set and present it as the whole, I am saying
-plainly that I cannot produce it, and I am happy to walk through any decision in
-this README live — including the ones where I changed my mind, and why.
+The task asked for these and I cannot deliver them in full. Most of my use was a
+question asked and answered in a one-off session while not signed in, so those
+conversations were never saved anywhere I can export them from. What is left is
+partial and spread across four tools. The design canvas linked above is the one
+piece of that work I can hand over intact.
+
+I would rather say this plainly than submit a reconstructed set and present it
+as the record. I am happy to walk through any decision in this README live,
+including the ones I changed my mind about and why.
 
 ---
 
