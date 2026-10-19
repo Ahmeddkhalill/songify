@@ -3,7 +3,7 @@
 A playlist manager: sign up, build playlists from a shared song catalog, reorder
 them, and preview tracks.
 
-Built as a backend assessment task. .NET 10 API, React frontend, PostgreSQL.
+Built with .NET 10 API, React frontend, PostgreSQL.
 
 **Live:** [songify-blue.vercel.app](https://songify-blue.vercel.app) ·
 **API:** [songify.runasp.net](https://songify.runasp.net) (Swagger at the root)
