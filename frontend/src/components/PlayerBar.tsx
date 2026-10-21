@@ -68,47 +68,49 @@ export default function PlayerBar() {
   const displayTime = scrub ?? currentTime
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 h-[72px] border-t border-ink-750 bg-ink-900">
-      <div className="max-w-[1280px] h-full mx-auto px-8 flex items-center gap-4">
-        <div className="flex items-center gap-3 min-w-0 basis-[30%]">
-          <div className="flex-none w-12 h-12 rounded-sm overflow-hidden bg-ink-850">
-            {current.coverImageUrl && (
-              <img src={current.coverImageUrl} alt="" className="w-full h-full object-cover" />
-            )}
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ink-750 bg-ink-900">
+      <div className="max-w-[1280px] mx-auto px-4 py-2 sm:px-8 sm:py-0 sm:h-[72px] flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex items-center gap-3 sm:contents">
+          <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-none sm:basis-[30%]">
+            <div className="flex-none w-12 h-12 rounded-sm overflow-hidden bg-ink-850">
+              {current.coverImageUrl && (
+                <img src={current.coverImageUrl} alt="" className="w-full h-full object-cover" />
+              )}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="font-medium text-ink-100 truncate">{current.title}</span>
+              <span className="text-small text-ink-400 truncate">{current.artist}</span>
+            </div>
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="font-medium text-ink-100 truncate">{current.title}</span>
-            <span className="text-small text-ink-400 truncate">{current.artist}</span>
-          </div>
-        </div>
 
-        <div className="flex-none flex items-center gap-2">
-          <button
-            type="button"
-            onClick={previous}
-            disabled={!canPrevious}
-            aria-label="Previous track"
-            className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
-          >
-            <PreviousIcon />
-          </button>
-          <button
-            type="button"
-            onClick={togglePlayPause}
-            aria-label={isPlaying ? `Pause ${current.title}` : `Play ${current.title}`}
-            className="w-10 h-10 grid place-items-center rounded-full bg-accent text-accent-fg hover:bg-accent-300"
-          >
-            {isPlaying ? <PauseIcon /> : <PlayIcon />}
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            disabled={!canNext}
-            aria-label="Next track"
-            className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
-          >
-            <NextIcon />
-          </button>
+          <div className="flex-none flex items-center gap-2">
+            <button
+              type="button"
+              onClick={previous}
+              disabled={!canPrevious}
+              aria-label="Previous track"
+              className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
+            >
+              <PreviousIcon />
+            </button>
+            <button
+              type="button"
+              onClick={togglePlayPause}
+              aria-label={isPlaying ? `Pause ${current.title}` : `Play ${current.title}`}
+              className="w-10 h-10 grid place-items-center rounded-full bg-accent text-accent-fg hover:bg-accent-300"
+            >
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              disabled={!canNext}
+              aria-label="Next track"
+              className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
+            >
+              <NextIcon />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 flex items-center gap-3 min-w-0">

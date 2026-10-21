@@ -9,7 +9,7 @@ export default function AppLayout() {
   return (
     <>
       <AppHeader />
-      <div className={current ? 'pb-[72px]' : ''}>
+      <div className={current ? 'pb-[112px] sm:pb-[72px]' : ''}>
         <Outlet />
       </div>
       <PlayerBar />
