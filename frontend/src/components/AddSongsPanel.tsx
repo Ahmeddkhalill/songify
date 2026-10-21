@@ -91,6 +91,7 @@ function ResultRow({
   song,
   added,
   justAdded,
+  active,
   playing,
   onTogglePlay,
   onAdd,
@@ -98,15 +99,19 @@ function ResultRow({
   song: Song
   added: boolean
   justAdded: boolean
+  active: boolean
   playing: boolean
   onTogglePlay: () => void
   onAdd: () => void
 }) {
+  const hasPreview = song.previewUrl !== null
+
   return (
     <li
-      className={`res flex items-center gap-3 min-h-[64px] pl-3 pr-2 rounded-md transition-colors duration-500 ${
-        justAdded ? 'bg-accent-950' : 'hover:bg-ink-850'
-      }`}
+      onClick={onTogglePlay}
+      className={`res flex items-center gap-3 min-h-[64px] pl-3 pr-2 rounded-md transition-colors duration-500 has-[[data-row-play]:focus-visible]:ring-2 has-[[data-row-play]:focus-visible]:ring-inset has-[[data-row-play]:focus-visible]:ring-accent ${
+        hasPreview ? 'cursor-pointer' : ''
+      } ${justAdded ? 'bg-accent-950' : 'hover:bg-ink-850'}`}
     >
       <div
         className={`flex-none w-12 h-12 rounded-sm overflow-hidden bg-ink-800 ${
@@ -120,7 +125,7 @@ function ResultRow({
       <div className="flex-1 min-w-0 flex flex-col">
         <span
           className={`font-medium truncate ${
-            playing ? 'text-accent' : added ? 'text-ink-400' : 'text-ink-100'
+            active ? 'text-accent' : added ? 'text-ink-400' : 'text-ink-100'
           }`}
         >
           {song.title}
@@ -132,10 +137,14 @@ function ResultRow({
       {song.previewUrl && (
         <button
           type="button"
-          onClick={onTogglePlay}
+          data-row-play
+          onClick={(event) => {
+            event.stopPropagation()
+            onTogglePlay()
+          }}
           aria-label={playing ? `Pause ${song.title}` : `Play ${song.title}`}
           className={`flex-none w-9 h-9 grid place-items-center rounded-md ${
-            playing ? 'text-accent' : 'text-ink-400 hover:bg-ink-800 hover:text-ink-100'
+            active ? 'text-accent' : 'text-ink-400 hover:bg-ink-800 hover:text-ink-100'
           }`}
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
@@ -161,7 +170,10 @@ function ResultRow({
       ) : (
         <button
           type="button"
-          onClick={onAdd}
+          onClick={(event) => {
+            event.stopPropagation()
+            onAdd()
+          }}
           aria-label={`Add ${song.title} by ${song.artist}`}
           className="add flex-none flex items-center gap-1.5 h-9 pl-2.5 pr-3 border border-ink-700 rounded-md bg-transparent text-ink-100 text-small font-medium hover:bg-ink-750 hover:border-ink-500"
         >
@@ -199,7 +211,7 @@ export default function AddSongsPanel({
   const [status, setStatus] = useState<Status>('loading')
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set())
   const [addError, setAddError] = useState<Song | null>(null)
-  const { playingId, toggle } = useAudioPlayer()
+  const { current, isPlaying, toggle } = useAudioPlayer()
 
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -464,8 +476,18 @@ export default function AddSongsPanel({
                     song={song}
                     added={addedSet.has(song.id)}
                     justAdded={justAdded.has(song.id)}
-                    playing={playingId === song.id}
-                    onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl)}
+                    active={current?.id === song.id}
+                    playing={current?.id === song.id && isPlaying}
+                    onTogglePlay={() =>
+                      song.previewUrl &&
+                      toggle({
+                        id: song.id,
+                        url: song.previewUrl,
+                        title: song.title,
+                        artist: song.artist,
+                        coverImageUrl: song.coverImageUrl,
+                      })
+                    }
                     onAdd={() => handleAdd(song)}
                   />
                 ))}

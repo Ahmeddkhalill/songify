@@ -138,6 +138,7 @@ function DragHandleIcon() {
 function SongRow({
   song,
   position,
+  active,
   playing,
   dragging,
   over,
@@ -150,6 +151,7 @@ function SongRow({
 }: {
   song: PlaylistSong
   position: number
+  active: boolean
   playing: boolean
   dragging: boolean
   over: boolean
@@ -164,6 +166,7 @@ function SongRow({
 
   return (
     <li
+      onClick={onTogglePlay}
       onDragOver={(event) => {
         event.preventDefault()
         event.dataTransfer.dropEffect = 'move'
@@ -173,7 +176,9 @@ function SongRow({
         event.preventDefault()
         onDrop()
       }}
-      className={`${rowGrid} group relative min-h-[60px] px-3 rounded-md transition-colors ${
+      className={`${rowGrid} group relative min-h-[60px] px-3 rounded-md transition-colors has-[[data-row-play]:focus-visible]:ring-2 has-[[data-row-play]:focus-visible]:ring-inset has-[[data-row-play]:focus-visible]:ring-accent ${
+        hasPreview ? 'cursor-pointer' : ''
+      } ${
         dragging
           ? 'opacity-60 bg-ink-800 shadow-[0_12px_32px_rgba(0,0,0,0.5)]'
           : over
@@ -186,10 +191,14 @@ function SongRow({
           <>
             <button
               type="button"
-              onClick={onTogglePlay}
+              data-row-play
+              onClick={(event) => {
+                event.stopPropagation()
+                onTogglePlay()
+              }}
               aria-label={playing ? `Pause ${song.title}` : `Play ${song.title}`}
               className={`absolute inset-0 grid place-items-center rounded-sm ${
-                playing
+                active
                   ? 'text-accent'
                   : 'text-ink-100 opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
               }`}
@@ -198,7 +207,7 @@ function SongRow({
             </button>
             <span
               className={`font-mono text-small text-ink-400 tabular-nums ${
-                playing ? 'opacity-0' : 'group-hover:opacity-0'
+                active ? 'opacity-0' : 'group-hover:opacity-0'
               }`}
             >
               {position}
@@ -215,7 +224,7 @@ function SongRow({
           )}
         </div>
         <div className="flex flex-col min-w-0">
-          <span className={`font-medium truncate ${playing ? 'text-accent' : 'text-ink-100'}`}>
+          <span className={`font-medium truncate ${active ? 'text-accent' : 'text-ink-100'}`}>
             {song.title}
           </span>
           <span className="text-small text-ink-400 truncate">{song.artist}</span>
@@ -229,7 +238,10 @@ function SongRow({
       </span>
       <button
         type="button"
-        onClick={onRemove}
+        onClick={(event) => {
+          event.stopPropagation()
+          onRemove()
+        }}
         aria-label={`Remove ${song.title} from playlist`}
         className="w-9 h-9 grid place-items-center rounded-md text-ink-400 hover:bg-ink-750 hover:text-ink-100"
       >
@@ -250,6 +262,7 @@ function SongRow({
         <button
           type="button"
           draggable
+          onClick={(event) => event.stopPropagation()}
           onDragStart={(event) => {
             event.dataTransfer.effectAllowed = 'move'
             event.dataTransfer.setData('text/plain', String(song.id))
@@ -358,7 +371,7 @@ function NotFoundState() {
 export default function PlaylistDetailPage() {
   const params = useParams()
   const navigate = useNavigate()
-  const { playingId, toggle } = useAudioPlayer()
+  const { current, isPlaying, toggle } = useAudioPlayer()
   const id = Number(params.id)
 
   const [playlist, setPlaylist] = useState<PlaylistDetail | null>(null)
@@ -543,7 +556,13 @@ export default function PlaylistDetailPage() {
     .filter((url): url is string => url !== null)
   const previewQueue = songs
     .filter((song): song is PlaylistSong & { previewUrl: string } => song.previewUrl !== null)
-    .map((song) => ({ id: song.id, url: song.previewUrl }))
+    .map((song) => ({
+      id: song.id,
+      url: song.previewUrl,
+      title: song.title,
+      artist: song.artist,
+      coverImageUrl: song.coverImageUrl,
+    }))
 
   return (
     <>
@@ -670,10 +689,23 @@ export default function PlaylistDetailPage() {
                   key={song.id}
                   song={song}
                   position={index + 1}
-                  playing={playingId === song.id}
+                  active={current?.id === song.id}
+                  playing={current?.id === song.id && isPlaying}
                   dragging={dragIndex === index}
                   over={overIndex === index && dragIndex !== null && dragIndex !== index}
-                  onTogglePlay={() => song.previewUrl && toggle(song.id, song.previewUrl, previewQueue)}
+                  onTogglePlay={() =>
+                    song.previewUrl &&
+                    toggle(
+                      {
+                        id: song.id,
+                        url: song.previewUrl,
+                        title: song.title,
+                        artist: song.artist,
+                        coverImageUrl: song.coverImageUrl,
+                      },
+                      previewQueue,
+                    )
+                  }
                   onRemove={() => removeSong(song)}
                   onDragStart={() => setDragIndex(index)}
                   onDragOver={() => setOverIndex(index)}

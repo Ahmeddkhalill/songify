@@ -8,70 +8,130 @@ import {
   type ReactNode,
 } from 'react'
 
-interface PreviewTrack {
+export interface AudioTrack {
   id: number
   url: string
+  title: string
+  artist: string
+  coverImageUrl: string | null
 }
 
 interface AudioPlayerContextValue {
-  playingId: number | null
-  toggle: (id: number, url: string, queue?: PreviewTrack[]) => void
+  current: AudioTrack | null
+  isPlaying: boolean
+  currentTime: number
+  duration: number
+  toggle: (track: AudioTrack, queue?: AudioTrack[]) => void
+  togglePlayPause: () => void
+  seek: (time: number) => void
 }
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(undefined)
 
 export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null)
-  const queueRef = useRef<PreviewTrack[] | null>(null)
-  const [playingId, setPlayingId] = useState<number | null>(null)
+  const queueRef = useRef<AudioTrack[] | null>(null)
+  const [current, setCurrent] = useState<AudioTrack | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
 
-  const play = useCallback((id: number, url: string) => {
+  const start = useCallback((track: AudioTrack) => {
     const audio = audioRef.current
     if (!audio) {
       return
     }
 
-    audio.src = url
-    audio.play().catch(() => {
-      setPlayingId((current) => (current === id ? null : current))
-    })
-    setPlayingId(id)
+    audio.src = track.url
+    setCurrent(track)
+    setCurrentTime(0)
+    setDuration(0)
+    setIsPlaying(true)
+    audio.play().catch(() => setIsPlaying(false))
+  }, [])
+
+  const resume = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio) {
+      return
+    }
+
+    setIsPlaying(true)
+    audio.play().catch(() => setIsPlaying(false))
+  }, [])
+
+  const pause = useCallback(() => {
+    audioRef.current?.pause()
+    setIsPlaying(false)
   }, [])
 
   const toggle = useCallback(
-    (id: number, url: string, queue?: PreviewTrack[]) => {
-      if (playingId === id) {
-        audioRef.current?.pause()
-        setPlayingId(null)
+    (track: AudioTrack, queue?: AudioTrack[]) => {
+      if (current?.id === track.id) {
+        if (isPlaying) {
+          pause()
+        } else {
+          resume()
+        }
         return
       }
 
       queueRef.current = queue ?? null
-      play(id, url)
+      start(track)
     },
-    [playingId, play],
+    [current, isPlaying, pause, resume, start],
   )
+
+  const togglePlayPause = useCallback(() => {
+    if (!current) {
+      return
+    }
+
+    if (isPlaying) {
+      pause()
+    } else {
+      resume()
+    }
+  }, [current, isPlaying, pause, resume])
+
+  const seek = useCallback((time: number) => {
+    const audio = audioRef.current
+    if (!audio) {
+      return
+    }
+
+    audio.currentTime = time
+    setCurrentTime(time)
+  }, [])
 
   const playNext = useCallback(() => {
     const queue = queueRef.current
-    const index = queue ? queue.findIndex((track) => track.id === playingId) : -1
+    const index = queue && current ? queue.findIndex((track) => track.id === current.id) : -1
     const next = index >= 0 ? queue![index + 1] : undefined
 
     if (next) {
-      play(next.id, next.url)
+      start(next)
       return
     }
 
     queueRef.current = null
-    setPlayingId(null)
-  }, [playingId, play])
+    setIsPlaying(false)
+  }, [current, start])
 
-  const value = useMemo(() => ({ playingId, toggle }), [playingId, toggle])
+  const value = useMemo(
+    () => ({ current, isPlaying, currentTime, duration, toggle, togglePlayPause, seek }),
+    [current, isPlaying, currentTime, duration, toggle, togglePlayPause, seek],
+  )
 
   return (
     <AudioPlayerContext.Provider value={value}>
       {children}
-      <audio ref={audioRef} onEnded={playNext} />
+      <audio
+        ref={audioRef}
+        onEnded={playNext}
+        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+      />
     </AudioPlayerContext.Provider>
   )
 }
