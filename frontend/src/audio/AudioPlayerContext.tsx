@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from 'react'
 
+const RESTART_THRESHOLD_SECONDS = 3
+
 export interface AudioTrack {
   id: number
   url: string
@@ -16,21 +18,31 @@ export interface AudioTrack {
   coverImageUrl: string | null
 }
 
+export interface AudioQueue {
+  key: string
+  tracks: AudioTrack[]
+}
+
 interface AudioPlayerContextValue {
   current: AudioTrack | null
   isPlaying: boolean
   currentTime: number
   duration: number
-  toggle: (track: AudioTrack, queue?: AudioTrack[]) => void
+  canNext: boolean
+  canPrevious: boolean
+  toggle: (track: AudioTrack, queue?: AudioQueue) => void
   togglePlayPause: () => void
   seek: (time: number) => void
+  next: () => void
+  previous: () => void
+  syncQueue: (key: string, tracks: AudioTrack[]) => void
 }
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(undefined)
 
 export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null)
-  const queueRef = useRef<AudioTrack[] | null>(null)
+  const [queue, setQueue] = useState<AudioQueue | null>(null)
   const [current, setCurrent] = useState<AudioTrack | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -66,7 +78,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const toggle = useCallback(
-    (track: AudioTrack, queue?: AudioTrack[]) => {
+    (track: AudioTrack, nextQueue?: AudioQueue) => {
       if (current?.id === track.id) {
         if (isPlaying) {
           pause()
@@ -76,7 +88,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      queueRef.current = queue ?? null
+      setQueue(nextQueue ?? null)
       start(track)
     },
     [current, isPlaying, pause, resume, start],
@@ -104,23 +116,94 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     setCurrentTime(time)
   }, [])
 
-  const playNext = useCallback(() => {
-    const queue = queueRef.current
-    const index = queue && current ? queue.findIndex((track) => track.id === current.id) : -1
-    const next = index >= 0 ? queue![index + 1] : undefined
+  const index = current && queue ? queue.tracks.findIndex((track) => track.id === current.id) : -1
+  const nextTrack = index >= 0 && queue ? queue.tracks[index + 1] : undefined
+  const previousTrack = index > 0 && queue ? queue.tracks[index - 1] : undefined
 
-    if (next) {
-      start(next)
+  const next = useCallback(() => {
+    if (nextTrack) {
+      start(nextTrack)
+    }
+  }, [nextTrack, start])
+
+  const previous = useCallback(() => {
+    if (!current) {
       return
     }
 
-    queueRef.current = null
+    if (currentTime > RESTART_THRESHOLD_SECONDS) {
+      seek(0)
+      resume()
+      return
+    }
+
+    if (previousTrack) {
+      start(previousTrack)
+    }
+  }, [current, currentTime, previousTrack, resume, seek, start])
+
+  const onEnded = useCallback(() => {
+    if (nextTrack) {
+      start(nextTrack)
+      return
+    }
+
+    seek(0)
     setIsPlaying(false)
-  }, [current, start])
+  }, [nextTrack, seek, start])
+
+  const syncQueue = useCallback(
+    (key: string, tracks: AudioTrack[]) => {
+      if (!queue || queue.key !== key || queue.tracks === tracks) {
+        return
+      }
+
+      if (current && !tracks.some((track) => track.id === current.id)) {
+        pause()
+        setCurrent(null)
+        setCurrentTime(0)
+        setDuration(0)
+        setQueue(null)
+        return
+      }
+
+      setQueue({ key, tracks })
+    },
+    [current, pause, queue],
+  )
+
+  const canNext = nextTrack !== undefined
+  const canPrevious = current !== null && (currentTime > RESTART_THRESHOLD_SECONDS || previousTrack !== undefined)
 
   const value = useMemo(
-    () => ({ current, isPlaying, currentTime, duration, toggle, togglePlayPause, seek }),
-    [current, isPlaying, currentTime, duration, toggle, togglePlayPause, seek],
+    () => ({
+      current,
+      isPlaying,
+      currentTime,
+      duration,
+      canNext,
+      canPrevious,
+      toggle,
+      togglePlayPause,
+      seek,
+      next,
+      previous,
+      syncQueue,
+    }),
+    [
+      current,
+      isPlaying,
+      currentTime,
+      duration,
+      canNext,
+      canPrevious,
+      toggle,
+      togglePlayPause,
+      seek,
+      next,
+      previous,
+      syncQueue,
+    ],
   )
 
   return (
@@ -128,7 +211,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       {children}
       <audio
         ref={audioRef}
-        onEnded={playNext}
+        onEnded={onEnded}
         onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
       />

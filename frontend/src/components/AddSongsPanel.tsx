@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { searchSongs } from '../api/songs'
 import { useAudioPlayer } from '../audio/AudioPlayerContext'
@@ -212,6 +212,20 @@ export default function AddSongsPanel({
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set())
   const [addError, setAddError] = useState<Song | null>(null)
   const { current, isPlaying, toggle } = useAudioPlayer()
+
+  const previewQueue = useMemo(
+    () =>
+      results
+        .filter((song): song is Song & { previewUrl: string } => song.previewUrl !== null)
+        .map((song) => ({
+          id: song.id,
+          url: song.previewUrl,
+          title: song.title,
+          artist: song.artist,
+          coverImageUrl: song.coverImageUrl,
+        })),
+    [results],
+  )
 
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -480,13 +494,16 @@ export default function AddSongsPanel({
                     playing={current?.id === song.id && isPlaying}
                     onTogglePlay={() =>
                       song.previewUrl &&
-                      toggle({
-                        id: song.id,
-                        url: song.previewUrl,
-                        title: song.title,
-                        artist: song.artist,
-                        coverImageUrl: song.coverImageUrl,
-                      })
+                      toggle(
+                        {
+                          id: song.id,
+                          url: song.previewUrl,
+                          title: song.title,
+                          artist: song.artist,
+                          coverImageUrl: song.coverImageUrl,
+                        },
+                        { key: 'search', tracks: previewQueue },
+                      )
                     }
                     onAdd={() => handleAdd(song)}
                   />

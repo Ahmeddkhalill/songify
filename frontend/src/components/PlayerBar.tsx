@@ -28,8 +28,35 @@ function PauseIcon() {
   )
 }
 
+function PreviousIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M7 6h2v12H7zM18 6l-8 6 8 6z" />
+    </svg>
+  )
+}
+
+function NextIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M15 6h2v12h-2zM6 6l8 6-8 6z" />
+    </svg>
+  )
+}
+
 export default function PlayerBar() {
-  const { current, isPlaying, currentTime, duration, togglePlayPause, seek } = useAudioPlayer()
+  const {
+    current,
+    isPlaying,
+    currentTime,
+    duration,
+    canNext,
+    canPrevious,
+    togglePlayPause,
+    seek,
+    next,
+    previous,
+  } = useAudioPlayer()
   const [scrub, setScrub] = useState<number | null>(null)
   const pointerActive = useRef(false)
 
@@ -55,14 +82,34 @@ export default function PlayerBar() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={togglePlayPause}
-          aria-label={isPlaying ? `Pause ${current.title}` : `Play ${current.title}`}
-          className="flex-none w-10 h-10 grid place-items-center rounded-full bg-accent text-accent-fg hover:bg-accent-300"
-        >
-          {isPlaying ? <PauseIcon /> : <PlayIcon />}
-        </button>
+        <div className="flex-none flex items-center gap-2">
+          <button
+            type="button"
+            onClick={previous}
+            disabled={!canPrevious}
+            aria-label="Previous track"
+            className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
+          >
+            <PreviousIcon />
+          </button>
+          <button
+            type="button"
+            onClick={togglePlayPause}
+            aria-label={isPlaying ? `Pause ${current.title}` : `Play ${current.title}`}
+            className="w-10 h-10 grid place-items-center rounded-full bg-accent text-accent-fg hover:bg-accent-300"
+          >
+            {isPlaying ? <PauseIcon /> : <PlayIcon />}
+          </button>
+          <button
+            type="button"
+            onClick={next}
+            disabled={!canNext}
+            aria-label="Next track"
+            className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
+          >
+            <NextIcon />
+          </button>
+        </div>
 
         <div className="flex-1 flex items-center gap-3 min-w-0">
           <span className="w-10 text-right font-mono text-small text-ink-400 tabular-nums">

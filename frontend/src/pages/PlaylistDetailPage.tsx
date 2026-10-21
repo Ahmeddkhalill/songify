@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAudioPlayer } from '../audio/AudioPlayerContext'
 import type { ApiError } from '../api/client'
@@ -371,8 +371,9 @@ function NotFoundState() {
 export default function PlaylistDetailPage() {
   const params = useParams()
   const navigate = useNavigate()
-  const { current, isPlaying, toggle } = useAudioPlayer()
+  const { current, isPlaying, toggle, syncQueue } = useAudioPlayer()
   const id = Number(params.id)
+  const queueKey = `playlist-${id}`
 
   const [playlist, setPlaylist] = useState<PlaylistDetail | null>(null)
   const [status, setStatus] = useState<Status>('loading')
@@ -409,6 +410,24 @@ export default function PlaylistDetailPage() {
   useEffect(() => {
     load()
   }, [load])
+
+  const previewQueue = useMemo(
+    () =>
+      (playlist?.songs ?? [])
+        .filter((song): song is PlaylistSong & { previewUrl: string } => song.previewUrl !== null)
+        .map((song) => ({
+          id: song.id,
+          url: song.previewUrl,
+          title: song.title,
+          artist: song.artist,
+          coverImageUrl: song.coverImageUrl,
+        })),
+    [playlist],
+  )
+
+  useEffect(() => {
+    syncQueue(queueKey, previewQueue)
+  }, [syncQueue, queueKey, previewQueue])
 
   const removeSong = useCallback(
     async (song: PlaylistSong) => {
@@ -554,15 +573,6 @@ export default function PlaylistDetailPage() {
   const coverImageUrls = songs
     .map((song) => song.coverImageUrl)
     .filter((url): url is string => url !== null)
-  const previewQueue = songs
-    .filter((song): song is PlaylistSong & { previewUrl: string } => song.previewUrl !== null)
-    .map((song) => ({
-      id: song.id,
-      url: song.previewUrl,
-      title: song.title,
-      artist: song.artist,
-      coverImageUrl: song.coverImageUrl,
-    }))
 
   return (
     <>
@@ -703,7 +713,7 @@ export default function PlaylistDetailPage() {
                         artist: song.artist,
                         coverImageUrl: song.coverImageUrl,
                       },
-                      previewQueue,
+                      { key: queueKey, tracks: previewQueue },
                     )
                   }
                   onRemove={() => removeSong(song)}
