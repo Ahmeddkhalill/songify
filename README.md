@@ -8,6 +8,8 @@ Built with .NET 10 API, React frontend, PostgreSQL.
 **Live:** [songify-blue.vercel.app](https://songify-blue.vercel.app) ·
 **API:** [songify.runasp.net](https://songify.runasp.net) (Swagger at the root)
 
+[![CI](https://github.com/Ahmeddkhalill/songify/actions/workflows/ci.yml/badge.svg)](https://github.com/Ahmeddkhalill/songify/actions/workflows/ci.yml)
+
 ![Sign in](docs/screenshots/sign-in.png)
 
 ![A playlist](docs/screenshots/playlist.png)
@@ -332,18 +334,6 @@ disagreeing with a first suggestion:
 - A proposed deployment host was abandoned when it turned out to require a card,
   and the database moved to the API host's own Postgres once an external
   connection proved impossible through the free tier's outbound firewall.
-
-### On the chat contexts
-
-The task asked for these and I cannot deliver them in full. Most of my use was a
-question asked and answered in a one-off session while not signed in, so those
-conversations were never saved anywhere I can export them from. What is left is
-partial and spread across four tools. The design canvas linked above is the one
-piece of that work I can hand over intact.
-
-I would rather say this plainly than submit a reconstructed set and present it
-as the record. I am happy to walk through any decision in this README live,
-including the ones I changed my mind about and why.
 
 ---
 
