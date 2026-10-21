@@ -298,7 +298,7 @@ function LoadingState() {
         <BackLink />
         <section aria-hidden="true" className="flex flex-wrap items-end gap-8">
           <Skeleton className="flex-none w-[200px] h-[200px] rounded-lg bg-ink-850" />
-          <div className="flex-1 min-w-[420px] flex flex-col gap-4">
+          <div className="flex-1 min-w-0 basis-[420px] flex flex-col gap-4">
             <div className="flex flex-col gap-3">
               <Skeleton className="w-16 h-2.5 rounded-xs bg-ink-800" />
               <Skeleton className="w-[46%] h-9 rounded-sm bg-ink-800" />

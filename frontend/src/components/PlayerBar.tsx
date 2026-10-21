@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useAudioPlayer } from '../audio/AudioPlayerContext'
 
 function formatTime(seconds: number): string {
@@ -44,7 +44,7 @@ function NextIcon() {
   )
 }
 
-export default function PlayerBar() {
+export default function PlayerBar({ onHeightChange }: { onHeightChange: (height: number) => void }) {
   const {
     current,
     isPlaying,
@@ -59,6 +59,20 @@ export default function PlayerBar() {
   } = useAudioPlayer()
   const [scrub, setScrub] = useState<number | null>(null)
   const pointerActive = useRef(false)
+  const observerRef = useRef<ResizeObserver | null>(null)
+  const measureRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      observerRef.current?.disconnect()
+      if (!node) {
+        onHeightChange(0)
+        return
+      }
+      const observer = new ResizeObserver(() => onHeightChange(node.offsetHeight))
+      observer.observe(node)
+      observerRef.current = observer
+    },
+    [onHeightChange],
+  )
 
   if (!current) {
     return null
@@ -68,7 +82,7 @@ export default function PlayerBar() {
   const displayTime = scrub ?? currentTime
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ink-750 bg-ink-900">
+    <div ref={measureRef} className="fixed inset-x-0 bottom-0 z-30 border-t border-ink-750 bg-ink-900">
       <div className="max-w-[1280px] mx-auto px-4 py-2 sm:px-8 sm:py-0 sm:h-[72px] flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
         <div className="flex items-center gap-3 sm:contents">
           <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-none sm:basis-[30%]">
@@ -89,7 +103,7 @@ export default function PlayerBar() {
               onClick={previous}
               disabled={!canPrevious}
               aria-label="Previous track"
-              className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
+              className="w-11 h-11 sm:w-9 sm:h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
             >
               <PreviousIcon />
             </button>
@@ -97,7 +111,7 @@ export default function PlayerBar() {
               type="button"
               onClick={togglePlayPause}
               aria-label={isPlaying ? `Pause ${current.title}` : `Play ${current.title}`}
-              className="w-10 h-10 grid place-items-center rounded-full bg-accent text-accent-fg hover:bg-accent-300"
+              className="w-11 h-11 sm:w-10 sm:h-10 grid place-items-center rounded-full bg-accent text-accent-fg hover:bg-accent-300"
             >
               {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
@@ -106,7 +120,7 @@ export default function PlayerBar() {
               onClick={next}
               disabled={!canNext}
               aria-label="Next track"
-              className="w-9 h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
+              className="w-11 h-11 sm:w-9 sm:h-9 grid place-items-center rounded-full text-ink-300 hover:text-ink-100 disabled:text-ink-600 disabled:hover:text-ink-600"
             >
               <NextIcon />
             </button>

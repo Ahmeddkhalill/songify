@@ -1,18 +1,18 @@
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { useAudioPlayer } from '../audio/AudioPlayerContext'
 import AppHeader from './AppHeader'
 import PlayerBar from './PlayerBar'
 
 export default function AppLayout() {
-  const { current } = useAudioPlayer()
+  const [playerHeight, setPlayerHeight] = useState(0)
 
   return (
     <>
       <AppHeader />
-      <div className={current ? 'pb-[112px] sm:pb-[72px]' : ''}>
+      <div style={{ paddingBottom: playerHeight }}>
         <Outlet />
       </div>
-      <PlayerBar />
+      <PlayerBar onHeightChange={setPlayerHeight} />
     </>
   )
 }
